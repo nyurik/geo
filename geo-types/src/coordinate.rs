@@ -1,7 +1,23 @@
 use crate::{coord, CoordNum, Point};
+use std::fmt::Debug;
+
+#[cfg(any(feature = "rstar", feature = "rstar_0_9"))]
+use crate::CoordFloat;
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq, UlpsEq};
+
+#[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct NoValue;
+
+pub trait Measure: Default + Copy + PartialEq + Debug {}
+pub trait ZCoord: Default + Copy + PartialEq + Debug {}
+pub trait Srid: Default + Copy + PartialEq + Debug {}
+
+impl<Z: Default + Copy + PartialEq + Debug> ZCoord for Z {}
+impl<M: Default + Copy + PartialEq + Debug> Measure for M {}
+impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
 
 /// A lightweight struct used to store coordinates on the 2-dimensional
 /// Cartesian plane.
@@ -25,10 +41,23 @@ use approx::{AbsDiffEq, RelativeEq, UlpsEq};
 /// [vector space]: //en.wikipedia.org/wiki/Vector_space
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Coordinate<T: CoordNum> {
+pub struct GenericCoord<T: CoordNum, Z: ZCoord, M: Measure> {
     pub x: T,
     pub y: T,
+    pub z: Z,
+    pub m: M,
 }
+
+impl<T: CoordNum, Z: ZCoord, M: Measure> GenericCoord<T, Z, M> {
+    pub fn new(x: T, y: T, z: Z, m: M) -> Self {
+        Self { x, y, z, m }
+    }
+}
+
+pub type Coordinate<T> = GenericCoord<T, NoValue, NoValue>;
+pub type CoordinateM<T, M> = GenericCoord<T, NoValue, M>;
+pub type CoordinateZ<T> = GenericCoord<T, T, NoValue>;
+pub type CoordinateZM<T, M> = GenericCoord<T, T, M>;
 
 impl<T: CoordNum> From<(T, T)> for Coordinate<T> {
     fn from(coords: (T, T)) -> Self {
@@ -288,7 +317,7 @@ where
 #[cfg(feature = "rstar")]
 impl<T> ::rstar::Point for Coordinate<T>
 where
-    T: ::num_traits::Float + ::rstar::RTreeNum,
+    T: CoordFloat + ::rstar::RTreeNum,
 {
     type Scalar = T;
 
@@ -321,7 +350,7 @@ where
 #[cfg(feature = "rstar_0_9")]
 impl<T> ::rstar_0_9::Point for Coordinate<T>
 where
-    T: ::num_traits::Float + ::rstar_0_9::RTreeNum,
+    T: CoordFloat + ::rstar_0_9::RTreeNum,
 {
     type Scalar = T;
 

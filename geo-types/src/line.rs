@@ -1,6 +1,8 @@
 use crate::{CoordNum, Coordinate, Point};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
+#[cfg(any(feature = "rstar", feature = "rstar_0_9"))]
+use crate::CoordFloat;
 
 /// A line segment made up of exactly two
 /// [`Coordinate`s](struct.Coordinate.html).
@@ -221,11 +223,12 @@ impl<T: AbsDiffEq<Epsilon = T> + CoordNum> AbsDiffEq for Line<T> {
     }
 }
 
+#[cfg(any(feature = "rstar", feature = "rstar_0_9"))]
 macro_rules! impl_rstar_line {
     ($rstar:ident) => {
         impl<T> ::$rstar::RTreeObject for Line<T>
         where
-            T: ::num_traits::Float + ::$rstar::RTreeNum,
+            T: CoordFloat + ::$rstar::RTreeNum,
         {
             type Envelope = ::$rstar::AABB<Point<T>>;
 
@@ -237,7 +240,7 @@ macro_rules! impl_rstar_line {
 
         impl<T> ::$rstar::PointDistance for Line<T>
         where
-            T: ::num_traits::Float + ::$rstar::RTreeNum,
+            T: CoordFloat + ::$rstar::RTreeNum,
         {
             fn distance_2(&self, point: &Point<T>) -> T {
                 let d = crate::private_utils::point_line_euclidean_distance(*point, *self);

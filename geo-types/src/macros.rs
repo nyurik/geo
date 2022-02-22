@@ -48,8 +48,22 @@ macro_rules! point {
 /// [`Coordinate`]: ./struct.Point.html
 #[macro_export]
 macro_rules! coord {
-    (x: $x:expr, y: $y:expr $(,)?) => {
-        $crate::Coordinate { x: $x, y: $y }
+    (x: $x:expr, y: $y:expr $(,)* ) => {
+        $crate::Coordinate::new(
+            $x,
+            $y,
+            $crate::NoValue::default(),
+            $crate::NoValue::default(),
+        )
+    };
+    (x: $x:expr, y: $y:expr, z: $z:expr $(,)* ) => {
+        $crate::Coordinate::new($x, $y, $z, $crate::NoValue::default())
+    };
+    (x: $x:expr, y: $y:expr, m: $m:expr, $(,)* ) => {
+        $crate::Coordinate::new($x, $y, $crate::NoValue::default(), $m)
+    };
+    (x: $x:expr, y: $y:expr, z: $z:expr, m: $m:expr, $(,)* ) => {
+        $crate::Coordinate::new($x, $y, $z, $m)
     };
 }
 

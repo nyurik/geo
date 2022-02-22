@@ -57,6 +57,9 @@ use std::fmt::Debug;
 #[macro_use]
 extern crate serde;
 
+#[cfg(feature = "serde")]
+use serde::Serialize;
+
 #[cfg(feature = "rstar")]
 extern crate rstar;
 
@@ -76,15 +79,25 @@ impl<T: Num + Copy + NumCast + PartialOrd + Debug> CoordinateType for T {}
 /// For algorithms which only make sense for floating point, like area or length calculations,
 /// see [CoordFloat](trait.CoordFloat.html).
 #[allow(deprecated)]
-pub trait CoordNum: CoordinateType + Debug {}
+#[cfg(feature = "serde")]
+pub trait CoordNum: CoordinateType + Debug + Default + Serialize {}
 #[allow(deprecated)]
-impl<T: CoordinateType + Debug> CoordNum for T {}
+#[cfg(feature = "serde")]
+impl<T: CoordinateType + Debug + Default + Serialize> CoordNum for T {}
+
+#[allow(deprecated)]
+#[cfg(not(feature = "serde"))]
+pub trait CoordNum: CoordinateType + Debug + Default {}
+
+#[allow(deprecated)]
+#[cfg(not(feature = "serde"))]
+impl<T: CoordinateType + Debug + Default> CoordNum for T {}
 
 pub trait CoordFloat: CoordNum + Float {}
 impl<T: CoordNum + Float> CoordFloat for T {}
 
 mod coordinate;
-pub use crate::coordinate::Coordinate;
+pub use crate::coordinate::{Coordinate, NoValue};
 
 mod point;
 pub use crate::point::Point;
