@@ -1,9 +1,6 @@
 use crate::{coord, CoordNum, Point};
 use std::fmt::Debug;
 
-#[cfg(any(feature = "rstar", feature = "rstar_0_9"))]
-use crate::CoordFloat;
-
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq, UlpsEq};
 
@@ -317,7 +314,7 @@ where
 #[cfg(feature = "rstar")]
 impl<T> ::rstar::Point for Coordinate<T>
 where
-    T: CoordFloat + ::rstar::RTreeNum,
+    T: ::num_traits::Float + ::rstar::RTreeNum,
 {
     type Scalar = T;
 
@@ -350,7 +347,7 @@ where
 #[cfg(feature = "rstar_0_9")]
 impl<T> ::rstar_0_9::Point for Coordinate<T>
 where
-    T: CoordFloat + ::rstar_0_9::RTreeNum,
+    T: ::num_traits::Float + ::rstar_0_9::RTreeNum,
 {
     type Scalar = T;
 
