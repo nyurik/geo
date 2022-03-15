@@ -80,11 +80,16 @@ pub trait CoordNum: CoordinateType + Debug {}
 #[allow(deprecated)]
 impl<T: CoordinateType + Debug> CoordNum for T {}
 
+pub trait Measure: Default + Copy + PartialEq + Debug {}
+pub trait ZCoord: Default + Copy + PartialEq + Debug {}
+impl<Z: Default + Copy + PartialEq + Debug> ZCoord for Z {}
+impl<M: Default + Copy + PartialEq + Debug> Measure for M {}
+
 pub trait CoordFloat: CoordNum + Float {}
 impl<T: CoordNum + Float> CoordFloat for T {}
 
 mod coordinate;
-pub use crate::coordinate::{Coordinate, NoValue};
+pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM, NoValue};
 
 mod point;
 pub use crate::point::Point;

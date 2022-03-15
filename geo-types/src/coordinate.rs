@@ -1,4 +1,4 @@
-use crate::{coord, CoordNum, Point};
+use crate::{coord, CoordNum, Measure, Point, ZCoord};
 use std::fmt::Debug;
 
 #[cfg(any(feature = "approx", test))]
@@ -8,12 +8,8 @@ use approx::{AbsDiffEq, RelativeEq, UlpsEq};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NoValue;
 
-pub trait Measure: Default + Copy + PartialEq + Debug {}
-pub trait ZCoord: Default + Copy + PartialEq + Debug {}
 pub trait Srid: Default + Copy + PartialEq + Debug {}
 
-impl<Z: Default + Copy + PartialEq + Debug> ZCoord for Z {}
-impl<M: Default + Copy + PartialEq + Debug> Measure for M {}
 impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
 
 /// A lightweight struct used to store coordinates on the 2-dimensional
@@ -374,5 +370,37 @@ where
             1 => &mut self.y,
             _ => unreachable!(),
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_coordinates() {
+        let p = coord! { x: 1.0, y: 2.0 };
+        assert_relative_eq!(p.x, 1.0);
+        assert_relative_eq!(p.y, 2.0);
+        assert_eq!(p.z, NoValue);
+        assert_eq!(p.m, NoValue);
+
+        let p = coord! { x: 1.0, y: 2.0, z: 3.0 };
+        assert_relative_eq!(p.x, 1.0);
+        assert_relative_eq!(p.y, 2.0);
+        assert_relative_eq!(p.z, 3.0);
+        assert_eq!(p.m, NoValue);
+
+        let p = coord! { x: 1.0, y: 2.0, m: 4_u8 };
+        assert_relative_eq!(p.x, 1.0);
+        assert_relative_eq!(p.y, 2.0);
+        assert_eq!(p.z, NoValue);
+        assert_eq!(p.m, 4_u8);
+
+        let p = coord! { x: 1_i32, y: 2_i32, z: 3_i32, m: 4.0_f64 };
+        assert_eq!(p.x, 1);
+        assert_eq!(p.y, 2);
+        assert_eq!(p.z, 3);
+        assert_relative_eq!(p.m, 4.0);
     }
 }

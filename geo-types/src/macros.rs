@@ -57,13 +57,13 @@ macro_rules! coord {
         )
     };
     (x: $x:expr, y: $y:expr, z: $z:expr $(,)* ) => {
-        $crate::Coordinate::new($x, $y, $z, $crate::NoValue::default())
+        $crate::CoordinateZ::new($x, $y, $z, $crate::NoValue::default())
     };
-    (x: $x:expr, y: $y:expr, m: $m:expr, $(,)* ) => {
-        $crate::Coordinate::new($x, $y, $crate::NoValue::default(), $m)
+    (x: $x:expr, y: $y:expr, m: $m:expr $(,)* ) => {
+        $crate::CoordinateM::new($x, $y, $crate::NoValue::default(), $m)
     };
-    (x: $x:expr, y: $y:expr, z: $z:expr, m: $m:expr, $(,)* ) => {
-        $crate::Coordinate::new($x, $y, $z, $m)
+    (x: $x:expr, y: $y:expr, z: $z:expr, m: $m:expr $(,)* ) => {
+        $crate::CoordinateZM::new($x, $y, $z, $m)
     };
 }
 
