@@ -5,11 +5,8 @@ use crate::*;
 // │ Implementations for Point      │
 // └────────────────────────────────┘
 
-impl<T> Contains<Coordinate<T>> for Point<T>
-where
-    T: CoordNum,
-{
-    fn contains(&self, coord: &Coordinate<T>) -> bool {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<GenericCoord<T, Z, M>> for Point<T, Z, M> {
+    fn contains(&self, coord: &GenericCoord<T, Z, M>) -> bool {
         &self.0 == coord
     }
 }

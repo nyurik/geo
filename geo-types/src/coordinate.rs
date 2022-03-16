@@ -70,8 +70,8 @@ impl<T: CoordNum> From<[T; 2]> for Coordinate<T> {
     }
 }
 
-impl<T: CoordNum> From<Point<T>> for Coordinate<T> {
-    fn from(point: Point<T>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Point<T, Z, M>> for Coordinate<T> {
+    fn from(point: Point<T, Z, M>) -> Self {
         coord! {
             x: point.x(),
             y: point.y(),

@@ -1,8 +1,9 @@
-use crate::{coord, CoordFloat, CoordNum, Coordinate};
+use crate::{CoordFloat, CoordNum, Measure, ZCoord, NoValue, point};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
+use crate::coordinate::GenericCoord;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 /// A single point in 2D space.
@@ -28,11 +29,16 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 /// ```
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Point<T: CoordNum>(pub Coordinate<T>);
+pub struct GenericPoint<T: CoordNum, Z: ZCoord, M: Measure>(pub GenericCoord<T, Z, M>);
 
-impl<T: CoordNum> From<Coordinate<T>> for Point<T> {
-    fn from(x: Coordinate<T>) -> Point<T> {
-        Point(x)
+pub type Point<T> = GenericPoint<T, NoValue, NoValue>;
+pub type PointM<T, M> = GenericPoint<T, NoValue, M>;
+pub type PointZ<T> = GenericPoint<T, T, NoValue>;
+pub type PointZM<T, M> = GenericPoint<T, T, M>;
+
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenericCoord<T, Z, M>> for GenericPoint<T> {
+    fn from(x: GenericCoord<T, Z, M>) -> GenericPoint<T> {
+        GenericPoint(x)
     }
 }
 
@@ -74,7 +80,7 @@ impl<T: CoordNum> Point<T> {
     /// assert_eq!(p.y(), 2.345);
     /// ```
     pub fn new(x: T, y: T) -> Point<T> {
-        Point(coord! { x: x, y: y })
+        point! { x: x, y: y }
     }
 
     /// Returns the x/horizontal component of the point.
@@ -159,7 +165,7 @@ impl<T: CoordNum> Point<T> {
     }
 }
 
-impl<T: CoordNum> Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Point<T> {
     /// Returns the dot product of the two points:
     /// `dot = x1 * x2 + y1 * y2`
     ///
@@ -257,11 +263,11 @@ where
     /// assert_eq!(p.y(), -2.5);
     /// ```
     fn neg(self) -> Point<T> {
-        Point(-self.0)
+        GenericPoint(-self.0)
     }
 }
 
-impl<T: CoordNum> Add for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Add for Point<T> {
     type Output = Point<T>;
 
     /// Add a point to the given point.
@@ -277,11 +283,11 @@ impl<T: CoordNum> Add for Point<T> {
     /// assert_eq!(p.y(), 5.0);
     /// ```
     fn add(self, rhs: Point<T>) -> Point<T> {
-        Point(self.0 + rhs.0)
+        GenericPoint(self.0 + rhs.0)
     }
 }
 
-impl<T: CoordNum> AddAssign for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> AddAssign for Point<T> {
     /// Add a point to the given point and assign it to the original point.
     ///
     /// # Examples
@@ -300,7 +306,7 @@ impl<T: CoordNum> AddAssign for Point<T> {
     }
 }
 
-impl<T: CoordNum> Sub for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Sub for Point<T> {
     type Output = Point<T>;
 
     /// Subtract a point from the given point.
@@ -316,11 +322,11 @@ impl<T: CoordNum> Sub for Point<T> {
     /// assert_eq!(p.y(), 0.5);
     /// ```
     fn sub(self, rhs: Point<T>) -> Point<T> {
-        Point(self.0 - rhs.0)
+        GenericPoint(self.0 - rhs.0)
     }
 }
 
-impl<T: CoordNum> SubAssign for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> SubAssign for Point<T> {
     /// Subtract a point from the given point and assign it to the original point.
     ///
     /// # Examples
@@ -339,7 +345,7 @@ impl<T: CoordNum> SubAssign for Point<T> {
     }
 }
 
-impl<T: CoordNum> Mul<T> for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Mul<T> for Point<T> {
     type Output = Point<T>;
 
     /// Scaler multiplication of a point
@@ -355,11 +361,11 @@ impl<T: CoordNum> Mul<T> for Point<T> {
     /// assert_eq!(p.y(), 6.0);
     /// ```
     fn mul(self, rhs: T) -> Point<T> {
-        Point(self.0 * rhs)
+        GenericPoint(self.0 * rhs)
     }
 }
 
-impl<T: CoordNum> MulAssign<T> for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> MulAssign<T> for Point<T> {
     /// Scaler multiplication of a point in place
     ///
     /// # Examples
@@ -378,7 +384,7 @@ impl<T: CoordNum> MulAssign<T> for Point<T> {
     }
 }
 
-impl<T: CoordNum> Div<T> for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Div<T> for Point<T> {
     type Output = Point<T>;
 
     /// Scaler division of a point
@@ -394,11 +400,11 @@ impl<T: CoordNum> Div<T> for Point<T> {
     /// assert_eq!(p.y(), 1.5);
     /// ```
     fn div(self, rhs: T) -> Point<T> {
-        Point(self.0 / rhs)
+        GenericPoint(self.0 / rhs)
     }
 }
 
-impl<T: CoordNum> DivAssign<T> for Point<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> DivAssign<T> for Point<T> {
     /// Scaler division of a point in place
     ///
     /// # Examples
@@ -544,6 +550,7 @@ where
 mod test {
     use super::*;
 
+    use crate::point;
     use approx::AbsDiffEq;
 
     #[test]
@@ -586,5 +593,10 @@ mod test {
 
         let p_inf = Point::new(f64::INFINITY, 1.);
         assert!(p.relative_ne(&p_inf, 1e-2, 1e-2));
+    }
+
+    #[test]
+    fn test_multi_dim_point() {
+        let p = point! { x: 0., y: 0., z: 1. };
     }
 }

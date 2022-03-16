@@ -85,7 +85,7 @@ mod coordinate;
 pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM, NoValue};
 
 mod point;
-pub use crate::point::Point;
+pub use crate::point::{Point, GenericPoint};
 
 mod multi_point;
 pub use crate::multi_point::MultiPoint;

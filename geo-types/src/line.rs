@@ -1,4 +1,4 @@
-use crate::{CoordNum, Coordinate, Point};
+use crate::{CoordNum, Coordinate, Point, GenericPoint};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
@@ -143,11 +143,11 @@ impl<T: CoordNum> Line<T> {
     }
 
     pub fn start_point(&self) -> Point<T> {
-        Point(self.start)
+        GenericPoint(self.start)
     }
 
     pub fn end_point(&self) -> Point<T> {
-        Point(self.end)
+        GenericPoint(self.end)
     }
 
     pub fn points(&self) -> (Point<T>, Point<T>) {
@@ -263,11 +263,11 @@ mod test {
         let delta = 1e-6;
         let line = Line::new(coord! { x: 0., y: 0. }, coord! { x: 1., y: 1. });
         let line_start_x = Line::new(
-            Point(coord! {
+            GenericPoint(coord! {
                 x: 0. + delta,
                 y: 0.,
             }),
-            Point(coord! { x: 1., y: 1. }),
+            GenericPoint(coord! { x: 1., y: 1. }),
         );
         assert!(line.abs_diff_eq(&line_start_x, 1e-2));
         assert!(line.abs_diff_ne(&line_start_x, 1e-12));
@@ -311,11 +311,11 @@ mod test {
 
         let line = Line::new(coord! { x: 0., y: 0. }, coord! { x: 1., y: 1. });
         let line_start_x = Line::new(
-            Point(coord! {
+            GenericPoint(coord! {
                 x: 0. + delta,
                 y: 0.,
             }),
-            Point(coord! { x: 1., y: 1. }),
+            GenericPoint(coord! { x: 1., y: 1. }),
         );
         let line_start_y = Line::new(
             coord! {
