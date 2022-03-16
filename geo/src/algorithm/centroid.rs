@@ -1,5 +1,5 @@
-use std::cmp::Ordering;
 use geo_types::GenPoint;
+use std::cmp::Ordering;
 
 use crate::algorithm::area::{get_linestring_area, Area};
 use crate::algorithm::dimensions::{Dimensions, Dimensions::*, HasDimensions};

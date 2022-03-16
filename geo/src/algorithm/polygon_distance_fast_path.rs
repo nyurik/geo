@@ -1,9 +1,9 @@
 use crate::algorithm::extremes::Extremes;
 use crate::prelude::*;
 use crate::{GeoFloat, Line, Point, Polygon, Triangle};
+use geo_types::GenPoint;
 use num_traits::float::FloatConst;
 use num_traits::Signed;
-use geo_types::GenPoint;
 
 // These are helper functions for the "fast path" of Polygon-Polygon distance
 // They use the rotating calipers method to speed up calculations.

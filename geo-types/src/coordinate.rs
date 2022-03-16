@@ -1,16 +1,8 @@
-use crate::{coord, CoordNum, GenPoint, Measure, ZCoord};
+use crate::{coord, CoordNum, GenPoint, Measure, NoValue, ZCoord};
 use std::fmt::Debug;
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq, UlpsEq};
-
-#[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct NoValue;
-
-pub trait Srid: Default + Copy + PartialEq + Debug {}
-
-impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
 
 /// A lightweight struct used to store coordinates on the 2-dimensional
 /// Cartesian plane.

@@ -5,13 +5,13 @@ use crate::algorithm::polygon_distance_fast_path::*;
 use crate::utils::{coord_pos_relative_to_ring, CoordPos};
 use crate::{
     Coordinate, GeoFloat, GeoNum, Line, LineString, MultiLineString, MultiPoint, MultiPolygon,
-    Point, Polygon, Triangle
+    Point, Polygon, Triangle,
 };
 use num_traits::{float::FloatConst, Bounded, Float, Signed};
 
+use geo_types::GenPoint;
 use rstar::RTree;
 use rstar::RTreeNum;
-use geo_types::GenPoint;
 
 /// Returns the distance between two geometries.
 
@@ -462,7 +462,9 @@ where
             return T::zero();
         }
         // Containment check
-        if !self.interiors().is_empty() && ring_contains_point(self, GenPoint(poly2.exterior().0[0])) {
+        if !self.interiors().is_empty()
+            && ring_contains_point(self, GenPoint(poly2.exterior().0[0]))
+        {
             // check each ring distance, returning the minimum
             let mut mindist: T = Float::max_value();
             for ring in self.interiors() {

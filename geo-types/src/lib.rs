@@ -82,11 +82,18 @@ impl<Z: Default + Copy + PartialEq + Debug> ZCoord for Z {}
 pub trait ZCoord: Default + Copy + PartialEq + Debug {}
 impl<M: Default + Copy + PartialEq + Debug> Measure for M {}
 
+pub trait Srid: Default + Copy + PartialEq + Debug {}
+impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
+
+#[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct NoValue;
+
 mod coordinate;
-pub use crate::coordinate::{GenCoord, Coordinate, CoordinateM, CoordinateZ, CoordinateZM, NoValue};
+pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM, GenCoord};
 
 mod point;
-pub use crate::point::{GenPoint, Point};
+pub use crate::point::{GenPoint, Point, PointM, PointZ, PointZM};
 
 mod multi_point;
 pub use crate::multi_point::MultiPoint;

@@ -1,4 +1,4 @@
-use crate::{point, CoordFloat, CoordNum, ZCoord, Measure, NoValue};
+use crate::{point, CoordFloat, CoordNum, Measure, NoValue, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -79,10 +79,12 @@ impl<T: CoordNum> Point<T> {
     /// assert_eq!(p.x(), 1.234);
     /// assert_eq!(p.y(), 2.345);
     /// ```
-    pub fn new(x: T, y: T) -> Point<T> {
+    pub fn new(x: T, y: T) -> Self {
         point! { x: x, y: y }
     }
+}
 
+impl<T: CoordNum, Z: ZCoord, M: Measure> GenPoint<T, Z, M> {
     /// Returns the x/horizontal component of the point.
     ///
     /// # Examples
@@ -110,7 +112,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(p.x(), 9.876);
     /// ```
-    pub fn set_x(&mut self, x: T) -> &mut Point<T> {
+    pub fn set_x(&mut self, x: T) -> &mut Self {
         self.0.x = x;
         self
     }
@@ -142,7 +144,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(p.y(), 9.876);
     /// ```
-    pub fn set_y(&mut self, y: T) -> &mut Point<T> {
+    pub fn set_y(&mut self, y: T) -> &mut Self {
         self.0.y = y;
         self
     }
@@ -162,6 +164,70 @@ impl<T: CoordNum> Point<T> {
     /// ```
     pub fn x_y(self) -> (T, T) {
         (self.0.x, self.0.y)
+    }
+
+    /// Returns the z component of the point.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geo_types::point;
+    ///
+    /// let p = point! { x: 1.234, y: 2.345, z: 3.456 };
+    ///
+    /// assert_eq!(p.z(), 3.456);
+    /// ```
+    pub fn z(self) -> Z {
+        self.0.z
+    }
+
+    /// Sets the z component of the point.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geo_types::point;
+    ///
+    /// let mut p = point! { x: 1.234, y: 2.345, z: 3.456 };
+    ///
+    /// p.set_z(9.876);
+    /// assert_eq!(p.z(), 9.876);
+    /// ```
+    pub fn set_z(&mut self, z: Z) -> &mut Self {
+        self.0.z = z;
+        self
+    }
+
+    /// Returns the m/measure component of the point.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geo_types::point;
+    ///
+    /// let p = point! { x: 1.234, y: 2.345, z: 3.456, m: 100 };
+    ///
+    /// assert_eq!(p.m(), 100);
+    /// ```
+    pub fn m(self) -> M {
+        self.0.m
+    }
+
+    /// Sets the m/measure component of the point.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use geo_types::point;
+    ///
+    /// let mut p = point! { x: 1.234, y: 2.345, z: 3.456, m: 100 };
+    ///
+    /// p.set_m(100);
+    /// assert_eq!(p.m(), 100);
+    /// ```
+    pub fn set_m(&mut self, m: M) -> &mut Self {
+        self.0.m = m;
+        self
     }
 }
 
@@ -549,9 +615,34 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
-
-    use crate::point;
     use approx::AbsDiffEq;
+
+    #[test]
+    fn test_point() {
+        let p: Point<_> = point! { x: 1.0, y: 2.0 };
+        assert_relative_eq!(p.x(), 1.0);
+        assert_relative_eq!(p.y(), 2.0);
+        assert_eq!(p.z(), NoValue);
+        assert_eq!(p.m(), NoValue);
+
+        let p: PointZ<_> = point! { x: 1.0, y: 2.0, z: 3.0 };
+        assert_relative_eq!(p.x(), 1.0);
+        assert_relative_eq!(p.y(), 2.0);
+        assert_relative_eq!(p.z(), 3.0);
+        assert_eq!(p.m(), NoValue);
+
+        let p: PointM<_, _> = point! { x: 1.0, y: 2.0, m: 4_u8 };
+        assert_relative_eq!(p.x(), 1.0);
+        assert_relative_eq!(p.y(), 2.0);
+        assert_eq!(p.z(), NoValue);
+        assert_eq!(p.m(), 4_u8);
+
+        let p: PointZM<_, _> = point! { x: 1_i32, y: 2_i32, z: 3_i32, m: 4.0_f64 };
+        assert_eq!(p.x(), 1);
+        assert_eq!(p.y(), 2);
+        assert_eq!(p.z(), 3);
+        assert_relative_eq!(p.m(), 4.0);
+    }
 
     #[test]
     fn test_abs_diff_eq() {

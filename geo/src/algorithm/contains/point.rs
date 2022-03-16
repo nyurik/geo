@@ -1,6 +1,6 @@
-use geo_types::{GenCoord, GenPoint, Measure, ZCoord};
 use super::Contains;
 use crate::*;
+use geo_types::{GenCoord, GenPoint, Measure, ZCoord};
 
 // ┌────────────────────────────────┐
 // │ Implementations for Point      │
@@ -30,7 +30,6 @@ where
         self.iter().any(|p| p.contains(rhs))
     }
 }
-
 
 #[cfg(test)]
 mod test {

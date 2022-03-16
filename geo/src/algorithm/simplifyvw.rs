@@ -6,8 +6,8 @@ use crate::{
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-use rstar::{RTree, RTreeNum};
 use geo_types::GenPoint;
+use rstar::{RTree, RTreeNum};
 
 /// Store triangle information
 // current is the candidate point for removal

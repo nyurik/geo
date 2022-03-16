@@ -51,11 +51,11 @@ mod triangle;
 #[cfg(test)]
 mod test {
     use crate::algorithm::contains::Contains;
+    use crate::geo_types::GenPoint;
     use crate::line_string;
     use crate::{
-        coord, point, Coordinate, Line, LineString, MultiPolygon, Point, Polygon, Rect, Triangle
+        coord, point, Coordinate, Line, LineString, MultiPolygon, Point, Polygon, Rect, Triangle,
     };
-    use crate::geo_types::GenPoint;
 
     #[test]
     // see https://github.com/georust/geo/issues/452

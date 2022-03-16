@@ -3,8 +3,8 @@ use crate::{
     Closest, Coordinate, GeoFloat, Geometry, GeometryCollection, Line, LineString, MultiLineString,
     MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
 };
-use std::iter;
 use geo_types::GenPoint;
+use std::iter;
 
 /// Find the closest `Point` between a given geometry and an input `Point`.
 /// The closest point may intersect the geometry, be a single

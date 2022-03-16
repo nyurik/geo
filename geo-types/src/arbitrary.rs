@@ -1,4 +1,7 @@
-use crate::{CoordFloat, Coordinate, GenPoint, Geometry, GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle};
+use crate::{
+    CoordFloat, Coordinate, GenPoint, Geometry, GeometryCollection, LineString, MultiLineString,
+    MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
+};
 use std::mem;
 
 impl<'a, T: arbitrary::Arbitrary<'a> + CoordFloat> arbitrary::Arbitrary<'a> for Coordinate<T> {

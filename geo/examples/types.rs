@@ -1,6 +1,6 @@
 extern crate geo;
 
-use geo_types::{GenPoint, point};
+use geo_types::{point, GenPoint};
 
 fn main() {
     let p = point! {
