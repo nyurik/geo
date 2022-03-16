@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use geo_types::GenericPoint;
+use geo_types::GenPoint;
 
 use crate::algorithm::area::{get_linestring_area, Area};
 use crate::algorithm::dimensions::{Dimensions, Dimensions::*, HasDimensions};
@@ -222,7 +222,7 @@ impl<T: GeoFloat> CentroidOperation<T> {
 
     fn centroid(&self) -> Option<Point<T>> {
         self.0.as_ref().map(|weighted_centroid| {
-            GenericPoint(weighted_centroid.accumulated / weighted_centroid.weight)
+            GenPoint(weighted_centroid.accumulated / weighted_centroid.weight)
         })
     }
 
@@ -494,7 +494,7 @@ mod test {
         };
         let linestring = line_string![coord];
         let centroid = linestring.centroid();
-        assert_eq!(centroid, Some(GenericPoint(coord)));
+        assert_eq!(centroid, Some(GenPoint(coord)));
     }
     #[test]
     fn linestring_test() {
@@ -541,7 +541,7 @@ mod test {
             line_string![coord],
             line_string![coord],
         ]);
-        assert_relative_eq!(mls.centroid().unwrap(), GenericPoint(coord));
+        assert_relative_eq!(mls.centroid().unwrap(), GenPoint(coord));
     }
     #[test]
     fn multilinestring_one_line_test() {

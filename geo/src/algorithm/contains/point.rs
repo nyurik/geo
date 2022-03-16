@@ -1,4 +1,4 @@
-use geo_types::{GenericCoord, GenericPoint, Measure, ZCoord};
+use geo_types::{GenCoord, GenPoint, Measure, ZCoord};
 use super::Contains;
 use crate::*;
 
@@ -6,17 +6,14 @@ use crate::*;
 // │ Implementations for Point      │
 // └────────────────────────────────┘
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<GenericCoord<T, Z, M>> for GenericPoint<T, Z, M> {
-    fn contains(&self, coord: &GenericCoord<T, Z, M>) -> bool {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<GenCoord<T, Z, M>> for GenPoint<T, Z, M> {
+    fn contains(&self, coord: &GenCoord<T, Z, M>) -> bool {
         &self.0 == coord
     }
 }
 
-impl<T> Contains<Point<T>> for Point<T>
-where
-    T: CoordNum,
-{
-    fn contains(&self, p: &Point<T>) -> bool {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<GenPoint<T, Z, M>> for GenPoint<T, Z, M> {
+    fn contains(&self, p: &GenPoint<T, Z, M>) -> bool {
         self.contains(&p.0)
     }
 }
@@ -31,5 +28,22 @@ where
 {
     fn contains(&self, rhs: &G) -> bool {
         self.iter().any(|p| p.contains(rhs))
+    }
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use geo_types::point;
+
+    #[test]
+    fn test_point_contains() {
+        assert!(point!(x: 1_i32, y: 2).contains(&point!(x: 1, y: 2)));
+        assert!(point!(x: 1.0_f32, y: 2.).contains(&point!(x: 1., y: 2.)));
+
+        assert!(point!(x: 1, y: 2, z: 3).contains(&point!(x: 1, y: 2, z: 3)));
+        assert!(point!(x: 1, y: 2, m: 4).contains(&point!(x: 1, y: 2, m: 4)));
+        assert!(point!(x: 1, y: 2, z: 3, m: 4).contains(&point!(x: 1, y: 2, z: 3, m: 4)));
     }
 }

@@ -4,7 +4,7 @@ use crate::{
     MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
 };
 use std::iter;
-use geo_types::GenericPoint;
+use geo_types::GenPoint;
 
 /// Find the closest `Point` between a given geometry and an input `Point`.
 /// The closest point may intersect the geometry, be a single
@@ -65,8 +65,8 @@ impl<F: GeoFloat> ClosestPoint<F> for Line<F> {
         //
         // Line equation: P = start + t * (end - start)
 
-        let direction_vector = GenericPoint(self.end - self.start);
-        let to_p = GenericPoint(p.0 - self.start);
+        let direction_vector = GenPoint(self.end - self.start);
+        let to_p = GenPoint(p.0 - self.start);
 
         let t = to_p.dot(direction_vector) / direction_vector.dot(direction_vector);
 
@@ -79,7 +79,7 @@ impl<F: GeoFloat> ClosestPoint<F> for Line<F> {
 
         let x = direction_vector.x();
         let y = direction_vector.y();
-        let c = GenericPoint(self.start + (t * x, t * y).into());
+        let c = GenPoint(self.start + (t * x, t * y).into());
 
         if self.intersects(p) {
             Closest::Intersection(c)
@@ -132,7 +132,7 @@ impl<F: GeoFloat> ClosestPoint<F> for Polygon<F> {
 
 impl<F: GeoFloat> ClosestPoint<F> for Coordinate<F> {
     fn closest_point(&self, p: &Point<F>) -> Closest<F> {
-        GenericPoint(*self).closest_point(p)
+        GenPoint(*self).closest_point(p)
     }
 }
 

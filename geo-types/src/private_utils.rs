@@ -3,7 +3,7 @@
 // hidden module is public so the geo crate can reuse these algorithms to
 // prevent duplication. These functions are _not_ meant for public consumption.
 
-use crate::{CoordFloat, CoordNum, Coordinate, Line, LineString, Point, Rect, GenericPoint};
+use crate::{CoordFloat, CoordNum, Coordinate, Line, LineString, Point, Rect, GenPoint};
 
 pub fn line_string_bounding_rect<T>(line_string: &LineString<T>) -> Option<Rect<T>>
 where
@@ -132,7 +132,7 @@ where
     }
     // LineString with one point equal p
     if line_string.0.len() == 1 {
-        return point_contains_point(GenericPoint(line_string[0]), point);
+        return point_contains_point(GenPoint(line_string[0]), point);
     }
     // check if point is a vertex
     if line_string.0.contains(&point.0) {

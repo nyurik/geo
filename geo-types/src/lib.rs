@@ -83,10 +83,10 @@ pub trait ZCoord: Default + Copy + PartialEq + Debug {}
 impl<M: Default + Copy + PartialEq + Debug> Measure for M {}
 
 mod coordinate;
-pub use crate::coordinate::{GenericCoord, Coordinate, CoordinateM, CoordinateZ, CoordinateZM, NoValue};
+pub use crate::coordinate::{GenCoord, Coordinate, CoordinateM, CoordinateZ, CoordinateZM, NoValue};
 
 mod point;
-pub use crate::point::{GenericPoint, Point};
+pub use crate::point::{GenPoint, Point};
 
 mod multi_point;
 pub use crate::multi_point::MultiPoint;
@@ -143,9 +143,9 @@ mod tests {
             y: 116.34,
         };
 
-        let p = GenericPoint(c);
+        let p = GenPoint(c);
 
-        let GenericPoint(c2) = p;
+        let GenPoint(c2) = p;
         assert_eq!(c, c2);
         assert_relative_eq!(c.x, c2.x);
         assert_relative_eq!(c.y, c2.y);

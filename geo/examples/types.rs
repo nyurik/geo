@@ -1,6 +1,6 @@
 extern crate geo;
 
-use geo_types::{GenericPoint, point};
+use geo_types::{GenPoint, point};
 
 fn main() {
     let p = point! {
@@ -8,6 +8,6 @@ fn main() {
         y: 116.34,
     };
 
-    let GenericPoint(coord) = p;
+    let GenPoint(coord) = p;
     println!("Point at ({}, {})", coord.x, coord.y);
 }

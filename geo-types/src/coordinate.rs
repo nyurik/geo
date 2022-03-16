@@ -1,4 +1,4 @@
-use crate::{coord, CoordNum, GenericPoint, Measure, ZCoord};
+use crate::{coord, CoordNum, GenPoint, Measure, ZCoord};
 use std::fmt::Debug;
 
 #[cfg(any(feature = "approx", test))]
@@ -34,23 +34,23 @@ impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
 /// [vector space]: //en.wikipedia.org/wiki/Vector_space
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct GenericCoord<T: CoordNum, Z: ZCoord, M: Measure> {
+pub struct GenCoord<T: CoordNum, Z: ZCoord, M: Measure> {
     pub x: T,
     pub y: T,
     pub z: Z,
     pub m: M,
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> GenericCoord<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> GenCoord<T, Z, M> {
     pub fn new(x: T, y: T, z: Z, m: M) -> Self {
         Self { x, y, z, m }
     }
 }
 
-pub type Coordinate<T> = GenericCoord<T, NoValue, NoValue>;
-pub type CoordinateM<T, M> = GenericCoord<T, NoValue, M>;
-pub type CoordinateZ<T> = GenericCoord<T, T, NoValue>;
-pub type CoordinateZM<T, M> = GenericCoord<T, T, M>;
+pub type Coordinate<T> = GenCoord<T, NoValue, NoValue>;
+pub type CoordinateM<T, M> = GenCoord<T, NoValue, M>;
+pub type CoordinateZ<T> = GenCoord<T, T, NoValue>;
+pub type CoordinateZM<T, M> = GenCoord<T, T, M>;
 
 impl<T: CoordNum> From<(T, T)> for Coordinate<T> {
     fn from(coords: (T, T)) -> Self {
@@ -70,8 +70,8 @@ impl<T: CoordNum> From<[T; 2]> for Coordinate<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenericPoint<T, Z, M>> for GenericCoord<T, Z, M> {
-    fn from(point: GenericPoint<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenPoint<T, Z, M>> for GenCoord<T, Z, M> {
+    fn from(point: GenPoint<T, Z, M>) -> Self {
         point.0
     }
 }

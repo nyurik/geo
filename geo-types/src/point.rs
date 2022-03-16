@@ -3,7 +3,7 @@ use crate::{point, CoordFloat, CoordNum, ZCoord, Measure, NoValue};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-use crate::coordinate::GenericCoord;
+use crate::coordinate::GenCoord;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 /// A single point in 2D space.
@@ -29,16 +29,16 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 /// ```
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct GenericPoint<T: CoordNum, Z: ZCoord, M: Measure>(pub GenericCoord<T, Z, M>);
+pub struct GenPoint<T: CoordNum, Z: ZCoord, M: Measure>(pub GenCoord<T, Z, M>);
 
-pub type Point<T> = GenericPoint<T, NoValue, NoValue>;
-pub type PointM<T, M> = GenericPoint<T, NoValue, M>;
-pub type PointZ<T> = GenericPoint<T, T, NoValue>;
-pub type PointZM<T, M> = GenericPoint<T, T, M>;
+pub type Point<T> = GenPoint<T, NoValue, NoValue>;
+pub type PointM<T, M> = GenPoint<T, NoValue, M>;
+pub type PointZ<T> = GenPoint<T, T, NoValue>;
+pub type PointZM<T, M> = GenPoint<T, T, M>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenericCoord<T, Z, M>> for GenericPoint<T, Z, M> {
-    fn from(x: GenericCoord<T, Z, M>) -> GenericPoint<T, Z, M> {
-        GenericPoint(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenCoord<T, Z, M>> for GenPoint<T, Z, M> {
+    fn from(x: GenCoord<T, Z, M>) -> GenPoint<T, Z, M> {
+        GenPoint(x)
     }
 }
 
@@ -263,7 +263,7 @@ where
     /// assert_eq!(p.y(), -2.5);
     /// ```
     fn neg(self) -> Point<T> {
-        GenericPoint(-self.0)
+        GenPoint(-self.0)
     }
 }
 
@@ -283,7 +283,7 @@ impl<T: CoordNum> Add for Point<T> {
     /// assert_eq!(p.y(), 5.0);
     /// ```
     fn add(self, rhs: Point<T>) -> Point<T> {
-        GenericPoint(self.0 + rhs.0)
+        GenPoint(self.0 + rhs.0)
     }
 }
 
@@ -322,7 +322,7 @@ impl<T: CoordNum> Sub for Point<T> {
     /// assert_eq!(p.y(), 0.5);
     /// ```
     fn sub(self, rhs: Point<T>) -> Point<T> {
-        GenericPoint(self.0 - rhs.0)
+        GenPoint(self.0 - rhs.0)
     }
 }
 
@@ -361,7 +361,7 @@ impl<T: CoordNum> Mul<T> for Point<T> {
     /// assert_eq!(p.y(), 6.0);
     /// ```
     fn mul(self, rhs: T) -> Point<T> {
-        GenericPoint(self.0 * rhs)
+        GenPoint(self.0 * rhs)
     }
 }
 
@@ -400,7 +400,7 @@ impl<T: CoordNum> Div<T> for Point<T> {
     /// assert_eq!(p.y(), 1.5);
     /// ```
     fn div(self, rhs: T) -> Point<T> {
-        GenericPoint(self.0 / rhs)
+        GenPoint(self.0 / rhs)
     }
 }
 
@@ -593,10 +593,5 @@ mod test {
 
         let p_inf = Point::new(f64::INFINITY, 1.);
         assert!(p.relative_ne(&p_inf, 1e-2, 1e-2));
-    }
-
-    #[test]
-    fn test_multi_dim_point() {
-        let p = point! { x: 0., y: 0., z: 1. };
     }
 }

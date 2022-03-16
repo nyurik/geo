@@ -21,7 +21,7 @@
 #[macro_export]
 macro_rules! point {
     ( $($tag:tt : $val:expr),* $(,)? ) => {
-        $crate::GenericPoint ( $crate::coord! { $( $tag: $val , )* } )
+        $crate::GenPoint ( $crate::coord! { $( $tag: $val , )* } )
     };
     ( $x:expr, $y:expr $(,)? ) => {
         $crate::point! { x: $x, y: $y }
