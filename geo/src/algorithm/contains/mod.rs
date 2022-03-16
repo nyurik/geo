@@ -53,8 +53,9 @@ mod test {
     use crate::algorithm::contains::Contains;
     use crate::line_string;
     use crate::{
-        coord, point, Coordinate, Line, LineString, MultiPolygon, Point, Polygon, Rect, Triangle,
+        coord, point, Coordinate, Line, LineString, MultiPolygon, Point, Polygon, Rect, Triangle
     };
+    use crate::geo_types::GenericPoint;
 
     #[test]
     // see https://github.com/georust/geo/issues/452
@@ -324,9 +325,9 @@ mod test {
         let line2 = Line::new(c(0., 6.), c(1.5, 4.5));
         // point on line
         let line3 = Line::new(c(0., 6.), c(3., 3.));
-        assert!(line1.contains(&Point(p0)));
-        assert!(!line2.contains(&Point(p0)));
-        assert!(line3.contains(&Point(p0)));
+        assert!(line1.contains(&GenericPoint(p0)));
+        assert!(!line2.contains(&GenericPoint(p0)));
+        assert!(line3.contains(&GenericPoint(p0)));
     }
     #[test]
     fn line_in_line_test() {

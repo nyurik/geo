@@ -73,19 +73,20 @@ extern crate approx;
 pub trait CoordNum: Num + Copy + NumCast + PartialOrd + Debug {}
 impl<T: Num + Copy + NumCast + PartialOrd + Debug> CoordNum for T {}
 
-pub trait Measure: Default + Copy + PartialEq + Debug {}
-pub trait ZCoord: Default + Copy + PartialEq + Debug {}
-impl<Z: Default + Copy + PartialEq + Debug> ZCoord for Z {}
-impl<M: Default + Copy + PartialEq + Debug> Measure for M {}
-
 pub trait CoordFloat: CoordNum + Float {}
 impl<T: CoordNum + Float> CoordFloat for T {}
 
+pub trait Measure: Default + Copy + PartialEq + Debug {}
+impl<Z: Default + Copy + PartialEq + Debug> ZCoord for Z {}
+
+pub trait ZCoord: Default + Copy + PartialEq + Debug {}
+impl<M: Default + Copy + PartialEq + Debug> Measure for M {}
+
 mod coordinate;
-pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM, NoValue};
+pub use crate::coordinate::{GenericCoord, Coordinate, CoordinateM, CoordinateZ, CoordinateZM, NoValue};
 
 mod point;
-pub use crate::point::{Point, GenericPoint};
+pub use crate::point::{GenericPoint, Point};
 
 mod multi_point;
 pub use crate::multi_point::MultiPoint;
@@ -142,9 +143,9 @@ mod tests {
             y: 116.34,
         };
 
-        let p = Point(c);
+        let p = GenericPoint(c);
 
-        let Point(c2) = p;
+        let GenericPoint(c2) = p;
         assert_eq!(c, c2);
         assert_relative_eq!(c.x, c2.x);
         assert_relative_eq!(c.y, c2.y);

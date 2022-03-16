@@ -1,4 +1,4 @@
-use crate::{point, CoordFloat, CoordNum, Coordinate, ZCoord, Measure, NoValue};
+use crate::{point, CoordFloat, CoordNum, ZCoord, Measure, NoValue};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -36,8 +36,8 @@ pub type PointM<T, M> = GenericPoint<T, NoValue, M>;
 pub type PointZ<T> = GenericPoint<T, T, NoValue>;
 pub type PointZM<T, M> = GenericPoint<T, T, M>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenericCoord<T, Z, M>> for GenericPoint<T> {
-    fn from(x: GenericCoord<T, Z, M>) -> GenericPoint<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenericCoord<T, Z, M>> for GenericPoint<T, Z, M> {
+    fn from(x: GenericCoord<T, Z, M>) -> GenericPoint<T, Z, M> {
         GenericPoint(x)
     }
 }
@@ -165,7 +165,7 @@ impl<T: CoordNum> Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Point<T> {
+impl<T: CoordNum> Point<T> {
     /// Returns the dot product of the two points:
     /// `dot = x1 * x2 + y1 * y2`
     ///
@@ -267,7 +267,7 @@ where
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Add for Point<T> {
+impl<T: CoordNum> Add for Point<T> {
     type Output = Point<T>;
 
     /// Add a point to the given point.
@@ -287,7 +287,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> Add for Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> AddAssign for Point<T> {
+impl<T: CoordNum> AddAssign for Point<T> {
     /// Add a point to the given point and assign it to the original point.
     ///
     /// # Examples
@@ -306,7 +306,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> AddAssign for Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Sub for Point<T> {
+impl<T: CoordNum> Sub for Point<T> {
     type Output = Point<T>;
 
     /// Subtract a point from the given point.
@@ -326,7 +326,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> Sub for Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> SubAssign for Point<T> {
+impl<T: CoordNum> SubAssign for Point<T> {
     /// Subtract a point from the given point and assign it to the original point.
     ///
     /// # Examples
@@ -345,7 +345,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> SubAssign for Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Mul<T> for Point<T> {
+impl<T: CoordNum> Mul<T> for Point<T> {
     type Output = Point<T>;
 
     /// Scaler multiplication of a point
@@ -365,7 +365,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> Mul<T> for Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> MulAssign<T> for Point<T> {
+impl<T: CoordNum> MulAssign<T> for Point<T> {
     /// Scaler multiplication of a point in place
     ///
     /// # Examples
@@ -384,7 +384,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> MulAssign<T> for Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Div<T> for Point<T> {
+impl<T: CoordNum> Div<T> for Point<T> {
     type Output = Point<T>;
 
     /// Scaler division of a point
@@ -404,7 +404,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> Div<T> for Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> DivAssign<T> for Point<T> {
+impl<T: CoordNum> DivAssign<T> for Point<T> {
     /// Scaler division of a point in place
     ///
     /// # Examples

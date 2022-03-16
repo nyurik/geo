@@ -7,6 +7,7 @@ use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
 use rstar::{RTree, RTreeNum};
+use geo_types::GenericPoint;
 
 /// Store triangle information
 // current is the candidate point for removal
@@ -312,9 +313,9 @@ where
         adjacent[smallest.current as usize] = (0, 0);
         counter -= 1;
         // Remove stale segments from R* tree
-        let left_point = Point(orig.0[left as usize]);
-        let middle_point = Point(orig.0[smallest.current]);
-        let right_point = Point(orig.0[right as usize]);
+        let left_point = GenericPoint(orig.0[left as usize]);
+        let middle_point = GenericPoint(orig.0[smallest.current]);
+        let right_point = GenericPoint(orig.0[right as usize]);
 
         let line_1 = Line::new(left_point, middle_point);
         let line_2 = Line::new(middle_point, right_point);
@@ -410,7 +411,7 @@ where
                 && ca.0 != point_c
                 && cb.0 != point_a
                 && cb.0 != point_c
-                && cartesian_intersect(ca, cb, Point(point_a), Point(point_c))
+                && cartesian_intersect(ca, cb, GenericPoint(point_a), GenericPoint(point_c))
         })
 }
 

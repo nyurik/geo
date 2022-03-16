@@ -1,3 +1,4 @@
+use geo_types::{GenericCoord, GenericPoint, Measure, ZCoord};
 use super::Contains;
 use crate::*;
 
@@ -5,7 +6,7 @@ use crate::*;
 // │ Implementations for Point      │
 // └────────────────────────────────┘
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<GenericCoord<T, Z, M>> for Point<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<GenericCoord<T, Z, M>> for GenericPoint<T, Z, M> {
     fn contains(&self, coord: &GenericCoord<T, Z, M>) -> bool {
         &self.0 == coord
     }

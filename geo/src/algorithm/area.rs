@@ -289,17 +289,17 @@ mod test {
         ];
         assert_relative_eq!(polygon.signed_area(), 30.);
     }
-    #[test]
-    fn area_polygon_3d_test() {
-        let polygon = polygon![
-            (x: 0., y: 0., z: 1.),
-            (x: 5., y: 0., z: 1.),
-            (x: 5., y: 6., z: 1.),
-            (x: 0., y: 6., z: 1.),
-            (x: 0., y: 0., z: 1.)
-        ];
-        assert_relative_eq!(polygon.signed_area(), 30.);
-    }
+    // #[test]
+    // fn area_polygon_3d_test() {
+    //     let polygon = polygon![
+    //         (x: 0., y: 0., z: 1.),
+    //         (x: 5., y: 0., z: 1.),
+    //         (x: 5., y: 6., z: 1.),
+    //         (x: 0., y: 6., z: 1.),
+    //         (x: 0., y: 0., z: 1.)
+    //     ];
+    //     assert_relative_eq!(polygon.signed_area(), 30.);
+    // }
     #[test]
     fn area_polygon_numerical_stability() {
         let polygon = {

@@ -1,4 +1,4 @@
-use crate::{coord, CoordNum, Measure, Point, ZCoord};
+use crate::{coord, CoordNum, GenericPoint, Measure, ZCoord};
 use std::fmt::Debug;
 
 #[cfg(any(feature = "approx", test))]
@@ -70,12 +70,9 @@ impl<T: CoordNum> From<[T; 2]> for Coordinate<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<Point<T, Z, M>> for Coordinate<T> {
-    fn from(point: Point<T, Z, M>) -> Self {
-        coord! {
-            x: point.x(),
-            y: point.y(),
-        }
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenericPoint<T, Z, M>> for GenericCoord<T, Z, M> {
+    fn from(point: GenericPoint<T, Z, M>) -> Self {
+        point.0
     }
 }
 

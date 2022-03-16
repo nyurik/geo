@@ -14,17 +14,14 @@
 ///
 /// let p = point!(181.2, 51.79);
 ///
-/// assert_eq!(p, geo_types::Point(geo_types::coord! {
-///     x: 181.2,
-///     y: 51.79,
-/// }));
+/// assert_eq!(p, geo_types::Point::new(181.2, 51.79));
 /// ```
 ///
 /// [`Point`]: ./struct.Point.html
 #[macro_export]
 macro_rules! point {
     ( $($tag:tt : $val:expr),* $(,)? ) => {
-        $crate::Point ( $crate::coord! { $( $tag: $val , )* } )
+        $crate::GenericPoint ( $crate::coord! { $( $tag: $val , )* } )
     };
     ( $x:expr, $y:expr $(,)? ) => {
         $crate::point! { x: $x, y: $y }

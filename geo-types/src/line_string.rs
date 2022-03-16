@@ -1,7 +1,7 @@
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-use crate::{CoordNum, Coordinate, Line, Point, Triangle};
+use crate::{CoordNum, Coordinate, Line, Point, Triangle, GenericPoint};
 use std::iter::FromIterator;
 use std::ops::{Index, IndexMut};
 
@@ -142,7 +142,7 @@ impl<'a, T: CoordNum> Iterator for PointsIter<'a, T> {
     type Item = Point<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|c| Point(*c))
+        self.0.next().map(|c| GenericPoint(*c))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -158,7 +158,7 @@ impl<'a, T: CoordNum> ExactSizeIterator for PointsIter<'a, T> {
 
 impl<'a, T: CoordNum> DoubleEndedIterator for PointsIter<'a, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        self.0.next_back().map(|c| Point(*c))
+        self.0.next_back().map(|c| GenericPoint(*c))
     }
 }
 
@@ -208,7 +208,7 @@ impl<T: CoordNum> LineString<T> {
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Point`]s
     pub fn into_points(self) -> Vec<Point<T>> {
-        self.0.into_iter().map(Point).collect()
+        self.0.into_iter().map(GenericPoint).collect()
     }
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Coordinate`]s
