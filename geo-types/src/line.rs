@@ -1,4 +1,4 @@
-use crate::{CoordNum, Coordinate, GenPoint, Point};
+use crate::{point, CoordNum, Coordinate, Point};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
@@ -143,11 +143,11 @@ impl<T: CoordNum> Line<T> {
     }
 
     pub fn start_point(&self) -> Point<T> {
-        GenPoint(self.start)
+        point!(self.start)
     }
 
     pub fn end_point(&self) -> Point<T> {
-        GenPoint(self.end)
+        point!(self.end)
     }
 
     pub fn points(&self) -> (Point<T>, Point<T>) {

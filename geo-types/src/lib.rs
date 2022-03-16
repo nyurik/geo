@@ -150,7 +150,7 @@ mod tests {
             y: 116.34,
         };
 
-        let p = GenPoint(c);
+        let p = point!(c);
 
         let GenPoint(c2) = p;
         assert_eq!(c, c2);

@@ -1,5 +1,4 @@
 use crate::{CoordFloat, Point, MEAN_EARTH_RADIUS};
-use geo_types::point;
 use num_traits::FromPrimitive;
 
 /// Returns a new Point along a great circle route between two existing points
@@ -13,16 +12,16 @@ pub trait HaversineIntermediate<T: CoordFloat> {
     /// # #[macro_use] extern crate approx;
     /// #
     /// use geo::algorithm::haversine_intermediate::HaversineIntermediate;
-    /// use geo::{Point, point};
+    /// use geo::Point;
     ///
     /// let p1 = Point::<f64>::new(10.0, 20.0);
     /// let p2 = Point::<f64>::new(125.0, 25.0);
     /// let i20 = p1.haversine_intermediate(&p2, 0.2);
     /// let i50 = p1.haversine_intermediate(&p2, 0.5);
     /// let i80 = p1.haversine_intermediate(&p2, 0.8);
-    /// let i20_should = point!(29.8, 29.9);
-    /// let i50_should = point!(65.8, 37.7);
-    /// let i80_should = point!(103.5, 33.5);
+    /// let i20_should = Point::new(29.8, 29.9);
+    /// let i50_should = Point::new(65.8, 37.7);
+    /// let i80_should = Point::new(103.5, 33.5);
     /// assert_relative_eq!(i20.x(), i20_should.x(), epsilon = 0.2);
     /// assert_relative_eq!(i20.y(), i20_should.y(), epsilon = 0.2);
     /// assert_relative_eq!(i50.x(), i50_should.x(), epsilon = 0.2);
@@ -123,7 +122,7 @@ fn get_point<T: CoordFloat + FromPrimitive>(params: &HaversineParams<T>, f: T) -
     let lat = z.atan2(x.hypot(y));
     let lon = y.atan2(x);
 
-    point!(lon.to_degrees(), lat.to_degrees())
+    Point::new(lon.to_degrees(), lat.to_degrees())
 }
 
 #[allow(clippy::many_single_char_names)]
@@ -187,9 +186,9 @@ mod test {
         let i20 = p1.haversine_intermediate(&p2, 0.2);
         let i50 = p1.haversine_intermediate(&p2, 0.5);
         let i80 = p1.haversine_intermediate(&p2, 0.8);
-        let i20_should = point!(29.83519, 29.94841);
-        let i50_should = point!(65.87471, 37.72201);
-        let i80_should = point!(103.56036, 33.50518);
+        let i20_should = Point::new(29.83519, 29.94841);
+        let i50_should = Point::new(65.87471, 37.72201);
+        let i80_should = Point::new(103.56036, 33.50518);
         assert_relative_eq!(i20.x(), i20_should.x(), epsilon = 0.2);
         assert_relative_eq!(i20.y(), i20_should.y(), epsilon = 0.2);
         assert_relative_eq!(i50.x(), i50_should.x(), epsilon = 0.2);
@@ -203,7 +202,7 @@ mod test {
         let p1 = Point::<f64>::new(0.0, 10.0);
         let p2 = Point::<f64>::new(180.0, 10.0);
         let i50 = p1.haversine_intermediate(&p2, 0.5);
-        let i50_should = point!(90.0, 90.0);
+        let i50_should = Point::new(90.0, 90.0);
         assert_relative_eq!(i50.x(), i50_should.x(), epsilon = 1.0e-6);
         assert_relative_eq!(i50.y(), i50_should.y(), epsilon = 1.0e-6);
     }

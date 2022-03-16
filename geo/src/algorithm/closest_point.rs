@@ -1,9 +1,8 @@
 use crate::prelude::*;
 use crate::{
-    Closest, Coordinate, GeoFloat, Geometry, GeometryCollection, Line, LineString, MultiLineString,
-    MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
+    point, Closest, Coordinate, GeoFloat, Geometry, GeometryCollection, Line, LineString,
+    MultiLineString, MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
 };
-use geo_types::GenPoint;
 use std::iter;
 
 /// Find the closest `Point` between a given geometry and an input `Point`.
@@ -18,12 +17,12 @@ use std::iter;
 ///
 /// ```rust
 /// # use geo::algorithm::closest_point::ClosestPoint;
-/// # use geo::{point, Point, Line, Closest};
-/// let p: Point<f32> = point!(0.0, 100.0);
-/// let horizontal_line: Line<f32> = Line::new(point!(-50.0, 0.0), point!(50.0, 0.0));
+/// # use geo::{Point, Line, Closest};
+/// let p: Point<f32> = Point::new(0.0, 100.0);
+/// let horizontal_line: Line<f32> = Line::new(Point::new(-50.0, 0.0), Point::new(50.0, 0.0));
 ///
 /// let closest = horizontal_line.closest_point(&p);
-/// assert_eq!(closest, Closest::SinglePoint(point!(0.0, 0.0)));
+/// assert_eq!(closest, Closest::SinglePoint(Point::new(0.0, 0.0)));
 /// ```
 pub trait ClosestPoint<F: GeoFloat, Rhs = Point<F>> {
     /// Find the closest point between `self` and `p`.
@@ -65,8 +64,8 @@ impl<F: GeoFloat> ClosestPoint<F> for Line<F> {
         //
         // Line equation: P = start + t * (end - start)
 
-        let direction_vector = GenPoint(self.end - self.start);
-        let to_p = GenPoint(p.0 - self.start);
+        let direction_vector = point!(self.end - self.start);
+        let to_p = point!(p.0 - self.start);
 
         let t = to_p.dot(direction_vector) / direction_vector.dot(direction_vector);
 
@@ -79,7 +78,7 @@ impl<F: GeoFloat> ClosestPoint<F> for Line<F> {
 
         let x = direction_vector.x();
         let y = direction_vector.y();
-        let c = GenPoint(self.start + (t * x, t * y).into());
+        let c = point!(self.start + (t * x, t * y).into());
 
         if self.intersects(p) {
             Closest::Intersection(c)
@@ -132,7 +131,7 @@ impl<F: GeoFloat> ClosestPoint<F> for Polygon<F> {
 
 impl<F: GeoFloat> ClosestPoint<F> for Coordinate<F> {
     fn closest_point(&self, p: &Point<F>) -> Closest<F> {
-        GenPoint(*self).closest_point(p)
+        point!(*self).closest_point(p)
     }
 }
 
@@ -210,8 +209,8 @@ mod tests {
     closest!(intersects: start_point, (0.0, 0.0));
     closest!(intersects: end_point, (100.0, 100.0));
     closest!(intersects: mid_point, (50.0, 50.0));
-    closest!(in_line_far_away, (1000.0, 1000.0) => Closest::SinglePoint(point!(100.0, 100.0)));
-    closest!(perpendicular_from_50_50, (0.0, 100.0) => Closest::SinglePoint(point!(50.0, 50.0)));
+    closest!(in_line_far_away, (1000.0, 1000.0) => Closest::SinglePoint(Point::new(100.0, 100.0)));
+    closest!(perpendicular_from_50_50, (0.0, 100.0) => Closest::SinglePoint(Point::new(50.0, 50.0)));
 
     fn a_square(width: f32) -> LineString<f32> {
         LineString::from(vec![
@@ -226,7 +225,7 @@ mod tests {
     #[test]
     fn zero_length_line_is_indeterminate() {
         let line: Line<f32> = Line::from([(0.0, 0.0), (0.0, 0.0)]);
-        let p: Point<f32> = point!(100.0, 100.0);
+        let p: Point<f32> = Point::new(100.0, 100.0);
         let should_be: Closest<f32> = Closest::Indeterminate;
 
         let got = line.closest_point(&p);
@@ -261,7 +260,7 @@ mod tests {
     #[test]
     fn empty_line_string_is_indeterminate() {
         let ls: LineString<f32> = LineString(Vec::new());
-        let p = point!(0.0, 0.0);
+        let p = Point::new(0.0, 0.0);
 
         let got = ls.closest_point(&p);
         assert_eq!(got, Closest::Indeterminate);
@@ -278,7 +277,7 @@ mod tests {
     #[test]
     fn polygon_without_rings_and_point_outside_is_same_as_linestring() {
         let poly = holy_polygon();
-        let p = point!(1000.0, 12345.678);
+        let p = Point::new(1000.0, 12345.678);
         assert!(
             !poly.exterior().contains(&p),
             "`p` should be outside the polygon!"

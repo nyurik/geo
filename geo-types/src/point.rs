@@ -1,9 +1,8 @@
-use crate::{point, CoordFloat, CoordNum, Measure, NoValue, ZCoord};
+use crate::{point, CoordFloat, CoordNum, GenCoord, Measure, NoValue, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-use crate::coordinate::GenCoord;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 /// A single point in 2D space.
@@ -329,7 +328,7 @@ where
     /// assert_eq!(p.y(), -2.5);
     /// ```
     fn neg(self) -> Point<T> {
-        GenPoint(-self.0)
+        point!(-self.0)
     }
 }
 
@@ -349,7 +348,7 @@ impl<T: CoordNum> Add for Point<T> {
     /// assert_eq!(p.y(), 5.0);
     /// ```
     fn add(self, rhs: Point<T>) -> Point<T> {
-        GenPoint(self.0 + rhs.0)
+        point!(self.0 + rhs.0)
     }
 }
 
@@ -388,7 +387,7 @@ impl<T: CoordNum> Sub for Point<T> {
     /// assert_eq!(p.y(), 0.5);
     /// ```
     fn sub(self, rhs: Point<T>) -> Point<T> {
-        GenPoint(self.0 - rhs.0)
+        point!(self.0 - rhs.0)
     }
 }
 
@@ -427,7 +426,7 @@ impl<T: CoordNum> Mul<T> for Point<T> {
     /// assert_eq!(p.y(), 6.0);
     /// ```
     fn mul(self, rhs: T) -> Point<T> {
-        GenPoint(self.0 * rhs)
+        point!(self.0 * rhs)
     }
 }
 
@@ -466,7 +465,7 @@ impl<T: CoordNum> Div<T> for Point<T> {
     /// assert_eq!(p.y(), 1.5);
     /// ```
     fn div(self, rhs: T) -> Point<T> {
-        GenPoint(self.0 / rhs)
+        point!(self.0 / rhs)
     }
 }
 
@@ -615,6 +614,7 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
+
     use approx::AbsDiffEq;
 
     #[test]

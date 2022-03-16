@@ -3,6 +3,7 @@
 /// ```txt
 /// point!(<x_number>, <y_number>)
 /// point! { x: <number>, y: <number> }
+/// point!(<coordinate>)
 /// ```
 ///
 /// # Examples
@@ -21,10 +22,13 @@
 #[macro_export]
 macro_rules! point {
     ( $($tag:tt : $val:expr),* $(,)? ) => {
-        $crate::GenPoint ( $crate::coord! { $( $tag: $val , )* } )
+        $crate::point! ( $crate::coord! { $( $tag: $val , )* } )
     };
     ( $x:expr, $y:expr $(,)? ) => {
         $crate::point! { x: $x, y: $y }
+    };
+    ( $coord:expr $(,)? ) => {
+        $crate::GenPoint($coord)
     };
 }
 
@@ -50,7 +54,7 @@ macro_rules! point {
 #[macro_export]
 macro_rules! coord {
     (x: $x:expr, y: $y:expr $(,)* ) => {
-        $crate::Coordinate::new(
+        $crate::GenCoord::new(
             $x,
             $y,
             $crate::NoValue::default(),
@@ -58,13 +62,13 @@ macro_rules! coord {
         )
     };
     (x: $x:expr, y: $y:expr, z: $z:expr $(,)* ) => {
-        $crate::CoordinateZ::new($x, $y, $z, $crate::NoValue::default())
+        $crate::GenCoord::new($x, $y, $z, $crate::NoValue::default())
     };
     (x: $x:expr, y: $y:expr, m: $m:expr $(,)* ) => {
-        $crate::CoordinateM::new($x, $y, $crate::NoValue::default(), $m)
+        $crate::GenCoord::new($x, $y, $crate::NoValue::default(), $m)
     };
     (x: $x:expr, y: $y:expr, z: $z:expr, m: $m:expr $(,)* ) => {
-        $crate::CoordinateZM::new($x, $y, $z, $m)
+        $crate::GenCoord::new($x, $y, $z, $m)
     };
 }
 

@@ -1,11 +1,10 @@
-use geo_types::GenPoint;
 use std::cmp::Ordering;
 
 use crate::algorithm::area::{get_linestring_area, Area};
 use crate::algorithm::dimensions::{Dimensions, Dimensions::*, HasDimensions};
 use crate::algorithm::euclidean_length::EuclideanLength;
 use crate::{
-    Coordinate, GeoFloat, Geometry, GeometryCollection, Line, LineString, MultiLineString,
+    point, Coordinate, GeoFloat, Geometry, GeometryCollection, Line, LineString, MultiLineString,
     MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
 };
 
@@ -153,14 +152,14 @@ where
 ///
 /// ```
 /// use geo::algorithm::centroid::Centroid;
-/// use geo::{MultiPoint, Point, point};
+/// use geo::{MultiPoint, Point};
 ///
 /// let empty: Vec<Point<f64>> = Vec::new();
 /// let empty_multi_points: MultiPoint<_> = empty.into();
 /// assert_eq!(empty_multi_points.centroid(), None);
 ///
 /// let points: MultiPoint<_> = vec![(5., 1.), (1., 3.), (3., 2.)].into();
-/// assert_eq!(points.centroid(), Some(point!(3., 2.)));
+/// assert_eq!(points.centroid(), Some(Point::new(3., 2.)));
 /// ```
 impl<T> Centroid for MultiPoint<T>
 where
@@ -222,7 +221,7 @@ impl<T: GeoFloat> CentroidOperation<T> {
 
     fn centroid(&self) -> Option<Point<T>> {
         self.0.as_ref().map(|weighted_centroid| {
-            GenPoint(weighted_centroid.accumulated / weighted_centroid.weight)
+            point!(weighted_centroid.accumulated / weighted_centroid.weight)
         })
     }
 
@@ -494,7 +493,7 @@ mod test {
         };
         let linestring = line_string![coord];
         let centroid = linestring.centroid();
-        assert_eq!(centroid, Some(GenPoint(coord)));
+        assert_eq!(centroid, Some(point!(coord)));
     }
     #[test]
     fn linestring_test() {
@@ -541,7 +540,7 @@ mod test {
             line_string![coord],
             line_string![coord],
         ]);
-        assert_relative_eq!(mls.centroid().unwrap(), GenPoint(coord));
+        assert_relative_eq!(mls.centroid().unwrap(), point!(coord));
     }
     #[test]
     fn multilinestring_one_line_test() {
