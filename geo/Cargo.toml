@@ -33,7 +33,7 @@ criterion = "0.3"
 geo-test-fixtures = { path = "../geo-test-fixtures" }
 # jts-test-runner is an internal crate which exists only to be part of the geo test suite.
 # As such it's kept unpublished. It's in a separate repo primarily because it's kind of large.
-jts-test-runner = { git = "https://github.com/georust/jts-test-runner", rev = "refs/pull/10/head" }
+jts-test-runner = { git = "https://github.com/nyurik/jts-test-runner", branch = "bump" }
 pretty_env_logger = "0.4"
 rand = "0.8.0"
 
