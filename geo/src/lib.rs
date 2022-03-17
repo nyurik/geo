@@ -181,9 +181,8 @@ pub use crate::types::Closest;
 
 pub use geo_types::{
     coord, line_string, point, polygon, CoordFloat, CoordNum, Coordinate, CoordinateM, CoordinateZ,
-    CoordinateZM, GenCoord, GenPoint, Geometry, GeometryCollection, Line, LineString,
-    MultiLineString, MultiPoint, MultiPolygon, Point, PointM, PointZ, PointZM, Polygon, Rect,
-    Triangle,
+    CoordinateZM, CoordTZM, Geometry, GeometryCollection, Line, LineString, MultiLineString,
+    MultiPoint, MultiPolygon, Point, PointM, PointTZM, PointZ, PointZM, Polygon, Rect, Triangle,
 };
 
 /// This module includes all the functions of geometric calculations

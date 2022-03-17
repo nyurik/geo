@@ -90,10 +90,10 @@ impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
 pub struct NoValue;
 
 mod coordinate;
-pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM, GenCoord};
+pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM, CoordTZM};
 
 mod point;
-pub use crate::point::{GenPoint, Point, PointM, PointZ, PointZM};
+pub use crate::point::{Point, PointM, PointTZM, PointZ, PointZM};
 
 mod multi_point;
 pub use crate::multi_point::MultiPoint;
@@ -152,7 +152,7 @@ mod tests {
 
         let p = point!(c);
 
-        let GenPoint(c2) = p;
+        let PointTZM(c2) = p;
         assert_eq!(c, c2);
         assert_relative_eq!(c.x, c2.x);
         assert_relative_eq!(c.y, c2.y);

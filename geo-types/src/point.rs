@@ -1,4 +1,4 @@
-use crate::{point, CoordFloat, CoordNum, GenCoord, Measure, NoValue, ZCoord};
+use crate::{point, CoordFloat, CoordNum, CoordTZM, Measure, NoValue, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -28,15 +28,15 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 /// ```
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct GenPoint<T: CoordNum, Z: ZCoord, M: Measure>(pub GenCoord<T, Z, M>);
+pub struct PointTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub CoordTZM<T, Z, M>);
 
-pub type Point<T> = GenPoint<T, NoValue, NoValue>;
-pub type PointM<T, M> = GenPoint<T, NoValue, M>;
-pub type PointZ<T> = GenPoint<T, T, NoValue>;
-pub type PointZM<T, M> = GenPoint<T, T, M>;
+pub type Point<T> = PointTZM<T, NoValue, NoValue>;
+pub type PointM<T, M> = PointTZM<T, NoValue, M>;
+pub type PointZ<T> = PointTZM<T, T, NoValue>;
+pub type PointZM<T, M> = PointTZM<T, T, M>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenCoord<T, Z, M>> for GenPoint<T, Z, M> {
-    fn from(x: GenCoord<T, Z, M>) -> GenPoint<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<CoordTZM<T, Z, M>> for PointTZM<T, Z, M> {
+    fn from(x: CoordTZM<T, Z, M>) -> PointTZM<T, Z, M> {
         point!(x)
     }
 }
@@ -83,7 +83,7 @@ impl<T: CoordNum> Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> GenPoint<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> PointTZM<T, Z, M> {
     /// Returns the x/horizontal component of the point.
     ///
     /// # Examples

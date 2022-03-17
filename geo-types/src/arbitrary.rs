@@ -1,6 +1,6 @@
 use crate::{
-    CoordFloat, Coordinate, GenPoint, Geometry, GeometryCollection, LineString, MultiLineString,
-    MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
+    CoordFloat, Coordinate, Geometry, GeometryCollection, LineString, MultiLineString, MultiPoint,
+    MultiPolygon, Point, PointTZM, Polygon, Rect, Triangle,
 };
 use std::mem;
 
@@ -14,7 +14,7 @@ impl<'a, T: arbitrary::Arbitrary<'a> + CoordFloat> arbitrary::Arbitrary<'a> for 
 
 impl<'a, T: arbitrary::Arbitrary<'a> + CoordFloat> arbitrary::Arbitrary<'a> for Point<T> {
     fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
-        u.arbitrary::<Coordinate<T>>().map(GenPoint)
+        u.arbitrary::<Coordinate<T>>().map(PointTZM)
     }
 }
 

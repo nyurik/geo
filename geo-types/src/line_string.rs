@@ -1,7 +1,7 @@
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-use crate::{point, CoordNum, Coordinate, GenPoint, Line, Point, Triangle};
+use crate::{point, CoordNum, Coordinate, Line, Point, PointTZM, Triangle};
 use std::iter::FromIterator;
 use std::ops::{Index, IndexMut};
 
@@ -208,7 +208,7 @@ impl<T: CoordNum> LineString<T> {
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Point`]s
     pub fn into_points(self) -> Vec<Point<T>> {
-        self.0.into_iter().map(GenPoint).collect()
+        self.0.into_iter().map(PointTZM).collect()
     }
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Coordinate`]s

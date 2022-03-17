@@ -29,7 +29,7 @@ macro_rules! point {
         $crate::point! { x: $x, y: $y }
     };
     ( $coord:expr $(,)? ) => {
-        $crate::GenPoint($coord)
+        $crate::PointTZM($coord)
     };
 }
 
@@ -55,7 +55,7 @@ macro_rules! point {
 #[macro_export]
 macro_rules! coord {
     (x: $x:expr, y: $y:expr $(,)* ) => {
-        $crate::GenCoord::new(
+        $crate::CoordTZM::new(
             $x,
             $y,
             $crate::NoValue::default(),
@@ -63,13 +63,13 @@ macro_rules! coord {
         )
     };
     (x: $x:expr, y: $y:expr, z: $z:expr $(,)* ) => {
-        $crate::GenCoord::new($x, $y, $z, $crate::NoValue::default())
+        $crate::CoordTZM::new($x, $y, $z, $crate::NoValue::default())
     };
     (x: $x:expr, y: $y:expr, m: $m:expr $(,)* ) => {
-        $crate::GenCoord::new($x, $y, $crate::NoValue::default(), $m)
+        $crate::CoordTZM::new($x, $y, $crate::NoValue::default(), $m)
     };
     (x: $x:expr, y: $y:expr, z: $z:expr, m: $m:expr $(,)* ) => {
-        $crate::GenCoord::new($x, $y, $z, $m)
+        $crate::CoordTZM::new($x, $y, $z, $m)
     };
 }
 
