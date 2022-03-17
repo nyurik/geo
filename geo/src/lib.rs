@@ -180,8 +180,8 @@ pub use crate::algorithm::*;
 pub use crate::types::Closest;
 
 pub use geo_types::{
-    coord, line_string, point, polygon, CoordFloat, CoordNum, Coordinate, CoordinateM, CoordinateZ,
-    CoordinateZM, CoordTZM, Geometry, GeometryCollection, Line, LineString, MultiLineString,
+    coord, line_string, point, polygon, CoordFloat, CoordNum, CoordTZM, Coordinate, CoordinateM,
+    CoordinateZ, CoordinateZM, Geometry, GeometryCollection, Line, LineString, MultiLineString,
     MultiPoint, MultiPolygon, Point, PointM, PointTZM, PointZ, PointZM, Polygon, Rect, Triangle,
 };
 

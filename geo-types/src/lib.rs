@@ -90,7 +90,7 @@ impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
 pub struct NoValue;
 
 mod coordinate;
-pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM, CoordTZM};
+pub use crate::coordinate::{CoordTZM, Coordinate, CoordinateM, CoordinateZ, CoordinateZM};
 
 mod point;
 pub use crate::point::{Point, PointM, PointTZM, PointZ, PointZM};
