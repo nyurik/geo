@@ -328,7 +328,7 @@ where
     /// assert_eq!(p.y(), -2.5);
     /// ```
     fn neg(self) -> Self::Output {
-        point!(-self.0)
+        Point::from(-self.0)
     }
 }
 
@@ -348,7 +348,7 @@ impl<T: CoordNum> Add for Point<T> {
     /// assert_eq!(p.y(), 5.0);
     /// ```
     fn add(self, rhs: Self) -> Self::Output {
-        point!(self.0 + rhs.0)
+        Point::from(self.0 + rhs.0)
     }
 }
 
@@ -387,7 +387,7 @@ impl<T: CoordNum> Sub for Point<T> {
     /// assert_eq!(p.y(), 0.5);
     /// ```
     fn sub(self, rhs: Self) -> Self::Output {
-        point!(self.0 - rhs.0)
+        Point::from(self.0 - rhs.0)
     }
 }
 
@@ -426,7 +426,7 @@ impl<T: CoordNum> Mul<T> for Point<T> {
     /// assert_eq!(p.y(), 6.0);
     /// ```
     fn mul(self, rhs: T) -> Self::Output {
-        point!(self.0 * rhs)
+        Point::from(self.0 * rhs)
     }
 }
 
@@ -465,7 +465,7 @@ impl<T: CoordNum> Div<T> for Point<T> {
     /// assert_eq!(p.y(), 1.5);
     /// ```
     fn div(self, rhs: T) -> Self::Output {
-        point!(self.0 / rhs)
+        Point::from(self.0 / rhs)
     }
 }
 

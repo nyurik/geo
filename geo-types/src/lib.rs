@@ -150,7 +150,7 @@ mod tests {
             y: 116.34,
         };
 
-        let p = point!(c);
+        let p = Point::from(c);
 
         let PointTZM(c2) = p;
         assert_eq!(c, c2);
