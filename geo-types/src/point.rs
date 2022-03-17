@@ -37,7 +37,7 @@ pub type PointZM<T, M> = GenPoint<T, T, M>;
 
 impl<T: CoordNum, Z: ZCoord, M: Measure> From<GenCoord<T, Z, M>> for GenPoint<T, Z, M> {
     fn from(x: GenCoord<T, Z, M>) -> GenPoint<T, Z, M> {
-        GenPoint(x)
+        point!(x)
     }
 }
 
@@ -244,7 +244,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(dot, 5.25);
     /// ```
-    pub fn dot(self, other: Point<T>) -> T {
+    pub fn dot(self, other: Self) -> T {
         self.x() * other.x() + self.y() * other.y()
     }
 
@@ -265,7 +265,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(cross, 2.0)
     /// ```
-    pub fn cross_prod(self, point_b: Point<T>, point_c: Point<T>) -> T {
+    pub fn cross_prod(self, point_b: Self, point_c: Self) -> T {
         (point_b.x() - self.x()) * (point_c.y() - self.y())
             - (point_b.y() - self.y()) * (point_c.x() - self.x())
     }
@@ -283,7 +283,7 @@ impl<T: CoordFloat> Point<T> {
     /// assert_eq!(x.round(), 71.0);
     /// assert_eq!(y.round(), 134.0);
     /// ```
-    pub fn to_degrees(self) -> Point<T> {
+    pub fn to_degrees(self) -> Self {
         let (x, y) = self.x_y();
         let x = x.to_degrees();
         let y = y.to_degrees();
@@ -301,7 +301,7 @@ impl<T: CoordFloat> Point<T> {
     /// assert_eq!(x.round(), 3.0);
     /// assert_eq!(y.round(), 6.0);
     /// ```
-    pub fn to_radians(self) -> Point<T> {
+    pub fn to_radians(self) -> Self {
         let (x, y) = self.x_y();
         let x = x.to_radians();
         let y = y.to_radians();
@@ -327,7 +327,7 @@ where
     /// assert_eq!(p.x(), 1.25);
     /// assert_eq!(p.y(), -2.5);
     /// ```
-    fn neg(self) -> Point<T> {
+    fn neg(self) -> Self::Output {
         point!(-self.0)
     }
 }
@@ -347,7 +347,7 @@ impl<T: CoordNum> Add for Point<T> {
     /// assert_eq!(p.x(), 2.75);
     /// assert_eq!(p.y(), 5.0);
     /// ```
-    fn add(self, rhs: Point<T>) -> Point<T> {
+    fn add(self, rhs: Self) -> Self::Output {
         point!(self.0 + rhs.0)
     }
 }
@@ -425,7 +425,7 @@ impl<T: CoordNum> Mul<T> for Point<T> {
     /// assert_eq!(p.x(), 4.0);
     /// assert_eq!(p.y(), 6.0);
     /// ```
-    fn mul(self, rhs: T) -> Point<T> {
+    fn mul(self, rhs: T) -> Self::Output {
         point!(self.0 * rhs)
     }
 }
@@ -464,7 +464,7 @@ impl<T: CoordNum> Div<T> for Point<T> {
     /// assert_eq!(p.x(), 1.0);
     /// assert_eq!(p.y(), 1.5);
     /// ```
-    fn div(self, rhs: T) -> Point<T> {
+    fn div(self, rhs: T) -> Self::Output {
         point!(self.0 / rhs)
     }
 }

@@ -15,7 +15,8 @@
 ///
 /// let p = point!(181.2, 51.79);
 ///
-/// assert_eq!(p, geo_types::Point::new(181.2, 51.79));
+/// assert_eq!(p.x(), 181.2);
+/// assert_eq!(p.y(), 51.79);
 /// ```
 ///
 /// [`Point`]: ./struct.Point.html
@@ -316,6 +317,22 @@ mod test {
             x: 1.2,
             y: 3.4,
         };
+        assert_eq!(p.x(), 1.2);
+        assert_eq!(p.y(), 3.4);
+
+        let p = point!(1.2, 3.4);
+        assert_eq!(p.x(), 1.2);
+        assert_eq!(p.y(), 3.4);
+
+        let p = point!(1.2, 3.4,);
+        assert_eq!(p.x(), 1.2);
+        assert_eq!(p.y(), 3.4);
+
+        let p = point!(coord! { x: 1.2, y: 3.4 });
+        assert_eq!(p.x(), 1.2);
+        assert_eq!(p.y(), 3.4);
+
+        let p = point!(coord! { x: 1.2, y: 3.4 },);
         assert_eq!(p.x(), 1.2);
         assert_eq!(p.y(), 3.4);
     }
