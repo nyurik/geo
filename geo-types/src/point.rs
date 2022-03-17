@@ -31,19 +31,19 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 pub struct Point<T: CoordNum>(pub Coordinate<T>);
 
 impl<T: CoordNum> From<Coordinate<T>> for Point<T> {
-    fn from(x: Coordinate<T>) -> Point<T> {
+    fn from(x: Coordinate<T>) -> Self {
         point!(x)
     }
 }
 
 impl<T: CoordNum> From<(T, T)> for Point<T> {
-    fn from(coords: (T, T)) -> Point<T> {
+    fn from(coords: (T, T)) -> Self {
         Point::new(coords.0, coords.1)
     }
 }
 
 impl<T: CoordNum> From<[T; 2]> for Point<T> {
-    fn from(coords: [T; 2]) -> Point<T> {
+    fn from(coords: [T; 2]) -> Self {
         Point::new(coords[0], coords[1])
     }
 }
@@ -308,7 +308,7 @@ impl<T> Neg for Point<T>
 where
     T: CoordNum + Neg<Output = T>,
 {
-    type Output = Point<T>;
+    type Output = Self;
 
     /// Returns a point with the x and y components negated.
     ///
@@ -328,7 +328,7 @@ where
 }
 
 impl<T: CoordNum> Add for Point<T> {
-    type Output = Point<T>;
+    type Output = Self;
 
     /// Add a point to the given point.
     ///
@@ -361,13 +361,13 @@ impl<T: CoordNum> AddAssign for Point<T> {
     /// assert_eq!(p.x(), 2.75);
     /// assert_eq!(p.y(), 5.0);
     /// ```
-    fn add_assign(&mut self, rhs: Point<T>) {
+    fn add_assign(&mut self, rhs: Self) {
         self.0 = self.0 + rhs.0;
     }
 }
 
 impl<T: CoordNum> Sub for Point<T> {
-    type Output = Point<T>;
+    type Output = Self;
 
     /// Subtract a point from the given point.
     ///
@@ -381,7 +381,7 @@ impl<T: CoordNum> Sub for Point<T> {
     /// assert_eq!(p.x(), -0.25);
     /// assert_eq!(p.y(), 0.5);
     /// ```
-    fn sub(self, rhs: Point<T>) -> Point<T> {
+    fn sub(self, rhs: Self) -> Self::Output {
         point!(self.0 - rhs.0)
     }
 }
@@ -400,13 +400,13 @@ impl<T: CoordNum> SubAssign for Point<T> {
     /// assert_eq!(p.x(), -0.25);
     /// assert_eq!(p.y(), 0.0);
     /// ```
-    fn sub_assign(&mut self, rhs: Point<T>) {
+    fn sub_assign(&mut self, rhs: Self) {
         self.0 = self.0 - rhs.0;
     }
 }
 
 impl<T: CoordNum> Mul<T> for Point<T> {
-    type Output = Point<T>;
+    type Output = Self;
 
     /// Scaler multiplication of a point
     ///
@@ -445,7 +445,7 @@ impl<T: CoordNum> MulAssign<T> for Point<T> {
 }
 
 impl<T: CoordNum> Div<T> for Point<T> {
-    type Output = Point<T>;
+    type Output = Self;
 
     /// Scaler division of a point
     ///
