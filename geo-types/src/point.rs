@@ -32,7 +32,7 @@ pub struct Point<T: CoordNum>(pub Coordinate<T>);
 
 impl<T: CoordNum> From<Coordinate<T>> for Point<T> {
     fn from(x: Coordinate<T>) -> Point<T> {
-        Point(x)
+        point!(x)
     }
 }
 
@@ -73,7 +73,7 @@ impl<T: CoordNum> Point<T> {
     /// assert_eq!(p.x(), 1.234);
     /// assert_eq!(p.y(), 2.345);
     /// ```
-    pub fn new(x: T, y: T) -> Point<T> {
+    pub fn new(x: T, y: T) -> Self {
         point! { x: x, y: y }
     }
 
@@ -104,7 +104,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(p.x(), 9.876);
     /// ```
-    pub fn set_x(&mut self, x: T) -> &mut Point<T> {
+    pub fn set_x(&mut self, x: T) -> &mut Self {
         self.0.x = x;
         self
     }
@@ -136,7 +136,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(p.y(), 9.876);
     /// ```
-    pub fn set_y(&mut self, y: T) -> &mut Point<T> {
+    pub fn set_y(&mut self, y: T) -> &mut Self {
         self.0.y = y;
         self
     }
@@ -187,7 +187,7 @@ impl<T: CoordNum> Point<T> {
     /// assert_eq!(p.x(), 9.876);
     /// ```
     #[deprecated = "use `Point::set_x` instead, it's less ambiguous"]
-    pub fn set_lng(&mut self, lng: T) -> &mut Point<T> {
+    pub fn set_lng(&mut self, lng: T) -> &mut Self {
         self.set_x(lng)
     }
 
@@ -220,7 +220,7 @@ impl<T: CoordNum> Point<T> {
     /// assert_eq!(p.y(), 9.876);
     /// ```
     #[deprecated = "use `Point::set_y` instead, it's less ambiguous"]
-    pub fn set_lat(&mut self, lat: T) -> &mut Point<T> {
+    pub fn set_lat(&mut self, lat: T) -> &mut Self {
         self.set_y(lat)
     }
 }
@@ -239,7 +239,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(dot, 5.25);
     /// ```
-    pub fn dot(self, other: Point<T>) -> T {
+    pub fn dot(self, other: Self) -> T {
         self.x() * other.x() + self.y() * other.y()
     }
 
@@ -260,7 +260,7 @@ impl<T: CoordNum> Point<T> {
     ///
     /// assert_eq!(cross, 2.0)
     /// ```
-    pub fn cross_prod(self, point_b: Point<T>, point_c: Point<T>) -> T {
+    pub fn cross_prod(self, point_b: Self, point_c: Self) -> T {
         (point_b.x() - self.x()) * (point_c.y() - self.y())
             - (point_b.y() - self.y()) * (point_c.x() - self.x())
     }
@@ -278,7 +278,7 @@ impl<T: CoordFloat> Point<T> {
     /// assert_eq!(x.round(), 71.0);
     /// assert_eq!(y.round(), 134.0);
     /// ```
-    pub fn to_degrees(self) -> Point<T> {
+    pub fn to_degrees(self) -> Self {
         let (x, y) = self.x_y();
         let x = x.to_degrees();
         let y = y.to_degrees();
@@ -296,7 +296,7 @@ impl<T: CoordFloat> Point<T> {
     /// assert_eq!(x.round(), 3.0);
     /// assert_eq!(y.round(), 6.0);
     /// ```
-    pub fn to_radians(self) -> Point<T> {
+    pub fn to_radians(self) -> Self {
         let (x, y) = self.x_y();
         let x = x.to_radians();
         let y = y.to_radians();
@@ -322,8 +322,8 @@ where
     /// assert_eq!(p.x(), 1.25);
     /// assert_eq!(p.y(), -2.5);
     /// ```
-    fn neg(self) -> Point<T> {
-        Point(-self.0)
+    fn neg(self) -> Self::Output {
+        point!(-self.0)
     }
 }
 
@@ -342,8 +342,8 @@ impl<T: CoordNum> Add for Point<T> {
     /// assert_eq!(p.x(), 2.75);
     /// assert_eq!(p.y(), 5.0);
     /// ```
-    fn add(self, rhs: Point<T>) -> Point<T> {
-        Point(self.0 + rhs.0)
+    fn add(self, rhs: Self) -> Self::Output {
+        point!(self.0 + rhs.0)
     }
 }
 
@@ -382,7 +382,7 @@ impl<T: CoordNum> Sub for Point<T> {
     /// assert_eq!(p.y(), 0.5);
     /// ```
     fn sub(self, rhs: Point<T>) -> Point<T> {
-        Point(self.0 - rhs.0)
+        point!(self.0 - rhs.0)
     }
 }
 
@@ -420,8 +420,8 @@ impl<T: CoordNum> Mul<T> for Point<T> {
     /// assert_eq!(p.x(), 4.0);
     /// assert_eq!(p.y(), 6.0);
     /// ```
-    fn mul(self, rhs: T) -> Point<T> {
-        Point(self.0 * rhs)
+    fn mul(self, rhs: T) -> Self::Output {
+        point!(self.0 * rhs)
     }
 }
 
@@ -459,8 +459,8 @@ impl<T: CoordNum> Div<T> for Point<T> {
     /// assert_eq!(p.x(), 1.0);
     /// assert_eq!(p.y(), 1.5);
     /// ```
-    fn div(self, rhs: T) -> Point<T> {
-        Point(self.0 / rhs)
+    fn div(self, rhs: T) -> Self::Output {
+        point!(self.0 / rhs)
     }
 }
 

@@ -4,7 +4,7 @@ use crate::algorithm::area::{get_linestring_area, Area};
 use crate::algorithm::dimensions::{Dimensions, Dimensions::*, HasDimensions};
 use crate::algorithm::euclidean_length::EuclideanLength;
 use crate::{
-    Coordinate, GeoFloat, Geometry, GeometryCollection, Line, LineString, MultiLineString,
+    point, Coordinate, GeoFloat, Geometry, GeometryCollection, Line, LineString, MultiLineString,
     MultiPoint, MultiPolygon, Point, Polygon, Rect, Triangle,
 };
 
@@ -221,7 +221,7 @@ impl<T: GeoFloat> CentroidOperation<T> {
 
     fn centroid(&self) -> Option<Point<T>> {
         self.0.as_ref().map(|weighted_centroid| {
-            Point(weighted_centroid.accumulated / weighted_centroid.weight)
+            point!(weighted_centroid.accumulated / weighted_centroid.weight)
         })
     }
 
@@ -493,7 +493,7 @@ mod test {
         };
         let linestring = line_string![coord];
         let centroid = linestring.centroid();
-        assert_eq!(centroid, Some(Point(coord)));
+        assert_eq!(centroid, Some(point!(coord)));
     }
     #[test]
     fn linestring_test() {
@@ -540,7 +540,7 @@ mod test {
             line_string![coord],
             line_string![coord],
         ]);
-        assert_relative_eq!(mls.centroid().unwrap(), Point(coord));
+        assert_relative_eq!(mls.centroid().unwrap(), point!(coord));
     }
     #[test]
     fn multilinestring_one_line_test() {

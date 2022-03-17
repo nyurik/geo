@@ -1,7 +1,7 @@
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-use crate::{CoordNum, Coordinate, Line, Point, Triangle};
+use crate::{point, CoordNum, Coordinate, Line, Point, Triangle};
 use std::iter::FromIterator;
 use std::ops::{Index, IndexMut};
 
@@ -142,7 +142,7 @@ impl<'a, T: CoordNum> Iterator for PointsIter<'a, T> {
     type Item = Point<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|c| Point(*c))
+        self.0.next().map(|c| point!(*c))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -158,7 +158,7 @@ impl<'a, T: CoordNum> ExactSizeIterator for PointsIter<'a, T> {
 
 impl<'a, T: CoordNum> DoubleEndedIterator for PointsIter<'a, T> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        self.0.next_back().map(|c| Point(*c))
+        self.0.next_back().map(|c| point!(*c))
     }
 }
 
