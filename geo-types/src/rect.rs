@@ -1,4 +1,7 @@
-use crate::{coord, polygon, CoordFloat, CoordNum, Coordinate, Line, Polygon};
+use crate::{
+    coord, polygon, CoordFloat, CoordNum, CoordTZM, Coordinate, Line, Measure, NoValue, Polygon,
+    ZCoord,
+};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -39,10 +42,15 @@ use approx::{AbsDiffEq, RelativeEq};
 /// ```
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Rect<T: CoordNum> {
-    min: Coordinate<T>,
-    max: Coordinate<T>,
+pub struct RectTZM<T: CoordNum, Z: ZCoord, M: Measure> {
+    min: CoordTZM<T, Z, M>,
+    max: CoordTZM<T, Z, M>,
 }
+
+pub type Rect<T> = RectTZM<T, NoValue, NoValue>;
+pub type RectM<T, M> = RectTZM<T, NoValue, M>;
+pub type RectZ<T> = RectTZM<T, T, NoValue>;
+pub type RectZM<T, M> = RectTZM<T, T, M>;
 
 impl<T: CoordNum> Rect<T> {
     /// Creates a new rectangle from two corner coordinates.

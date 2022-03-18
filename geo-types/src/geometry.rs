@@ -1,6 +1,8 @@
 use crate::{
-    CoordNum, Error, GeometryCollection, Line, LineString, MultiLineString, MultiPoint,
-    MultiPolygon, Point, Polygon, Rect, Triangle,
+    CoordNum, Error, GeometryCollection, GeometryCollectionTZM, Line, LineString, LineStringTZM,
+    LineTZM, Measure, MultiLineString, MultiLineStringTZM, MultiPoint, MultiPointTZM, MultiPolygon,
+    MultiPolygonTZM, NoValue, Point, PointTZM, Polygon, PolygonTZM, Rect, RectTZM, Triangle,
+    TriangleTZM, ZCoord,
 };
 
 #[cfg(any(feature = "approx", test))]
@@ -26,18 +28,23 @@ use std::convert::TryFrom;
 ///
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub enum Geometry<T: CoordNum> {
-    Point(Point<T>),
-    Line(Line<T>),
-    LineString(LineString<T>),
-    Polygon(Polygon<T>),
-    MultiPoint(MultiPoint<T>),
-    MultiLineString(MultiLineString<T>),
-    MultiPolygon(MultiPolygon<T>),
-    GeometryCollection(GeometryCollection<T>),
-    Rect(Rect<T>),
-    Triangle(Triangle<T>),
+pub enum GeometryTZM<T: CoordNum, Z: ZCoord, M: Measure> {
+    Point(PointTZM<T, Z, M>),
+    Line(LineTZM<T, Z, M>),
+    LineString(LineStringTZM<T, Z, M>),
+    Polygon(PolygonTZM<T, Z, M>),
+    MultiPoint(MultiPointTZM<T, Z, M>),
+    MultiLineString(MultiLineStringTZM<T, Z, M>),
+    MultiPolygon(MultiPolygonTZM<T, Z, M>),
+    GeometryCollection(GeometryCollectionTZM<T, Z, M>),
+    Rect(RectTZM<T, Z, M>),
+    Triangle(TriangleTZM<T, Z, M>),
 }
+
+pub type Geometry<T> = GeometryTZM<T, NoValue, NoValue>;
+pub type GeometryM<T, M> = GeometryTZM<T, NoValue, M>;
+pub type GeometryZ<T> = GeometryTZM<T, T, NoValue>;
+pub type GeometryZM<T, M> = GeometryTZM<T, T, M>;
 
 impl<T: CoordNum> From<Point<T>> for Geometry<T> {
     fn from(x: Point<T>) -> Self {

@@ -1,4 +1,4 @@
-use crate::{CoordNum, Polygon};
+use crate::{CoordNum, Measure, NoValue, Polygon, PolygonTZM, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -27,7 +27,12 @@ use std::iter::FromIterator;
 /// predicates that operate on it.
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct MultiPolygon<T: CoordNum>(pub Vec<Polygon<T>>);
+pub struct MultiPolygonTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<PolygonTZM<T, Z, M>>);
+
+pub type MultiPolygon<T> = MultiPolygonTZM<T, NoValue, NoValue>;
+pub type MultiPolygonM<T, M> = MultiPolygonTZM<T, NoValue, M>;
+pub type MultiPolygonZ<T> = MultiPolygonTZM<T, T, NoValue>;
+pub type MultiPolygonZM<T, M> = MultiPolygonTZM<T, T, M>;
 
 impl<T: CoordNum, IP: Into<Polygon<T>>> From<IP> for MultiPolygon<T> {
     fn from(x: IP) -> Self {

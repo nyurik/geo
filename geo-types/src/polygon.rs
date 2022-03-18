@@ -1,4 +1,4 @@
-use crate::{CoordNum, LineString, Rect, Triangle};
+use crate::{CoordNum, LineString, LineStringTZM, Measure, NoValue, Rect, Triangle, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -65,10 +65,15 @@ use approx::{AbsDiffEq, RelativeEq};
 /// [`LineString`]: line_string/struct.LineString.html
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Polygon<T: CoordNum> {
-    exterior: LineString<T>,
-    interiors: Vec<LineString<T>>,
+pub struct PolygonTZM<T: CoordNum, Z: ZCoord, M: Measure> {
+    exterior: LineStringTZM<T, Z, M>,
+    interiors: Vec<LineStringTZM<T, Z, M>>,
 }
+
+pub type Polygon<T> = PolygonTZM<T, NoValue, NoValue>;
+pub type PolygonM<T, M> = PolygonTZM<T, NoValue, M>;
+pub type PolygonZ<T> = PolygonTZM<T, T, NoValue>;
+pub type PolygonZM<T, M> = PolygonTZM<T, T, M>;
 
 impl<T: CoordNum> Polygon<T> {
     /// Create a new `Polygon` with the provided exterior `LineString` ring and

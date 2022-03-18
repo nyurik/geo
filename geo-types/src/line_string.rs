@@ -1,7 +1,7 @@
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-use crate::{CoordNum, Coordinate, Line, Point, PointTZM, Triangle};
+use crate::{CoordNum, CoordTZM, Coordinate, Line, Measure, NoValue, Point, Triangle, ZCoord};
 use std::iter::FromIterator;
 use std::ops::{Index, IndexMut};
 
@@ -132,7 +132,12 @@ use std::ops::{Index, IndexMut};
 
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct LineString<T: CoordNum>(pub Vec<Coordinate<T>>);
+pub struct LineStringTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<CoordTZM<T, Z, M>>);
+
+pub type LineString<T> = LineStringTZM<T, NoValue, NoValue>;
+pub type LineStringM<T, M> = LineStringTZM<T, NoValue, M>;
+pub type LineStringZ<T> = LineStringTZM<T, T, NoValue>;
+pub type LineStringZM<T, M> = LineStringTZM<T, T, M>;
 
 /// A [`Point`] iterator returned by the `points` method
 #[derive(Debug)]

@@ -96,34 +96,43 @@ mod point;
 pub use crate::point::{Point, PointM, PointTZM, PointZ, PointZM};
 
 mod multi_point;
-pub use crate::multi_point::MultiPoint;
+pub use crate::multi_point::{MultiPoint, MultiPointM, MultiPointTZM, MultiPointZ, MultiPointZM};
 
 mod line;
-pub use crate::line::Line;
+pub use crate::line::{Line, LineM, LineTZM, LineZ, LineZM};
 
 mod line_string;
-pub use crate::line_string::{LineString, PointsIter};
+pub use crate::line_string::{
+    LineString, LineStringM, LineStringTZM, LineStringZ, LineStringZM, PointsIter,
+};
 
 mod multi_line_string;
-pub use crate::multi_line_string::MultiLineString;
+pub use crate::multi_line_string::{
+    MultiLineString, MultiLineStringM, MultiLineStringTZM, MultiLineStringZ, MultiLineStringZM,
+};
 
 mod polygon;
-pub use crate::polygon::Polygon;
+pub use crate::polygon::{Polygon, PolygonM, PolygonTZM, PolygonZ, PolygonZM};
 
 mod multi_polygon;
-pub use crate::multi_polygon::MultiPolygon;
+pub use crate::multi_polygon::{
+    MultiPolygon, MultiPolygonM, MultiPolygonTZM, MultiPolygonZ, MultiPolygonZM,
+};
 
 mod geometry;
-pub use crate::geometry::Geometry;
+pub use crate::geometry::{Geometry, GeometryM, GeometryTZM, GeometryZ, GeometryZM};
 
 mod geometry_collection;
-pub use crate::geometry_collection::GeometryCollection;
+pub use crate::geometry_collection::{
+    GeometryCollection, GeometryCollectionM, GeometryCollectionTZM, GeometryCollectionZ,
+    GeometryCollectionZM,
+};
 
 mod triangle;
-pub use crate::triangle::Triangle;
+pub use crate::triangle::{Triangle, TriangleM, TriangleTZM, TriangleZ, TriangleZM};
 
 mod rect;
-pub use crate::rect::Rect;
+pub use crate::rect::{Rect, RectM, RectTZM, RectZ, RectZM};
 
 mod error;
 pub use error::Error;

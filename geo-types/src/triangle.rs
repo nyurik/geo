@@ -1,4 +1,4 @@
-use crate::{polygon, CoordNum, Coordinate, Line, Polygon};
+use crate::{polygon, CoordNum, CoordTZM, Coordinate, Line, Measure, NoValue, Polygon, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -9,7 +9,16 @@ use approx::{AbsDiffEq, RelativeEq};
 /// vertices must not be collinear and they must be distinct.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Triangle<T: CoordNum>(pub Coordinate<T>, pub Coordinate<T>, pub Coordinate<T>);
+pub struct TriangleTZM<T: CoordNum, Z: ZCoord, M: Measure>(
+    pub CoordTZM<T, Z, M>,
+    pub CoordTZM<T, Z, M>,
+    pub CoordTZM<T, Z, M>,
+);
+
+pub type Triangle<T> = TriangleTZM<T, NoValue, NoValue>;
+pub type TriangleM<T, M> = TriangleTZM<T, NoValue, M>;
+pub type TriangleZ<T> = TriangleTZM<T, T, NoValue>;
+pub type TriangleZM<T, M> = TriangleTZM<T, T, M>;
 
 impl<T: CoordNum> Triangle<T> {
     /// Instantiate Self from the raw content value

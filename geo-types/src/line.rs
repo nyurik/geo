@@ -1,4 +1,4 @@
-use crate::{CoordNum, Coordinate, Point};
+use crate::{CoordNum, CoordTZM, Coordinate, Measure, NoValue, Point, ZCoord};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
@@ -11,10 +11,15 @@ use approx::{AbsDiffEq, RelativeEq};
 /// `LineString` with the two end points.
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Line<T: CoordNum> {
-    pub start: Coordinate<T>,
-    pub end: Coordinate<T>,
+pub struct LineTZM<T: CoordNum, Z: ZCoord, M: Measure> {
+    pub start: CoordTZM<T, Z, M>,
+    pub end: CoordTZM<T, Z, M>,
 }
+
+pub type Line<T> = LineTZM<T, NoValue, NoValue>;
+pub type LineM<T, M> = LineTZM<T, NoValue, M>;
+pub type LineZ<T> = LineTZM<T, T, NoValue>;
+pub type LineZM<T, M> = LineTZM<T, T, M>;
 
 impl<T: CoordNum> Line<T> {
     /// Creates a new line segment.

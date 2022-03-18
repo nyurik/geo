@@ -1,4 +1,4 @@
-use crate::{CoordNum, Point};
+use crate::{CoordNum, Measure, NoValue, Point, PointTZM, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -30,7 +30,12 @@ use std::iter::FromIterator;
 /// ```
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct MultiPoint<T: CoordNum>(pub Vec<Point<T>>);
+pub struct MultiPointTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<PointTZM<T, Z, M>>);
+
+pub type MultiPoint<T> = MultiPointTZM<T, NoValue, NoValue>;
+pub type MultiPointM<T, M> = MultiPointTZM<T, NoValue, M>;
+pub type MultiPointZ<T> = MultiPointTZM<T, T, NoValue>;
+pub type MultiPointZM<T, M> = MultiPointTZM<T, T, M>;
 
 impl<T: CoordNum, IP: Into<Point<T>>> From<IP> for MultiPoint<T> {
     /// Convert a single `Point` (or something which can be converted to a `Point`) into a

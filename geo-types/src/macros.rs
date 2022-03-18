@@ -136,7 +136,7 @@ macro_rules! coord {
 /// [`LineString`]: ./line_string/struct.LineString.html
 #[macro_export]
 macro_rules! line_string {
-    () => { $crate::LineString(vec![]) };
+    () => { $crate::LineStringTZM(vec![]) };
     (
         $(( $($tag:tt : $val:expr),* $(,)? )),*
         $(,)?
@@ -151,7 +151,7 @@ macro_rules! line_string {
         $($coord:expr),*
         $(,)?
     ) => {
-        $crate::LineString(
+        $crate::LineStringTZM(
             <[_]>::into_vec(
                 ::std::boxed::Box::new(
                     [$($coord), *]
@@ -229,7 +229,7 @@ macro_rules! line_string {
 /// [`Polygon`]: ./struct.Polygon.html
 #[macro_export]
 macro_rules! polygon {
-    () => { $crate::Polygon::new(line_string![], vec![]) };
+    () => { $crate::PolygonTZM::new(line_string![], vec![]) };
     (
         exterior: [
             $(( $($exterior_tag:tt : $exterior_val:expr),* $(,)? )),*
@@ -271,7 +271,7 @@ macro_rules! polygon {
         ]
         $(,)?
     ) => {
-        $crate::Polygon::new(
+        $crate::PolygonTZM::new(
             $crate::line_string![
                 $($exterior_coord), *
             ],
@@ -298,7 +298,7 @@ macro_rules! polygon {
         $($coord:expr),*
         $(,)?
     ) => {
-        $crate::Polygon::new(
+        $crate::PolygonTZM::new(
             $crate::line_string![$($coord,)*],
             vec![],
         )

@@ -1,4 +1,4 @@
-use crate::{CoordNum, Geometry};
+use crate::{CoordNum, Geometry, GeometryTZM, Measure, NoValue, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -71,7 +71,12 @@ use std::ops::{Index, IndexMut};
 ///
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct GeometryCollection<T: CoordNum>(pub Vec<Geometry<T>>);
+pub struct GeometryCollectionTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<GeometryTZM<T, Z, M>>);
+
+pub type GeometryCollection<T> = GeometryCollectionTZM<T, NoValue, NoValue>;
+pub type GeometryCollectionM<T, M> = GeometryCollectionTZM<T, NoValue, M>;
+pub type GeometryCollectionZ<T> = GeometryCollectionTZM<T, T, NoValue>;
+pub type GeometryCollectionZM<T, M> = GeometryCollectionTZM<T, T, M>;
 
 // Implementing Default by hand because T does not have Default restriction
 // todo: consider adding Default as a CoordNum requirement

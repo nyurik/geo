@@ -1,4 +1,4 @@
-use crate::{CoordNum, LineString};
+use crate::{CoordNum, LineString, LineStringTZM, Measure, NoValue, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -33,7 +33,12 @@ use std::iter::FromIterator;
 /// of a closed `MultiLineString` is always empty.
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct MultiLineString<T: CoordNum>(pub Vec<LineString<T>>);
+pub struct MultiLineStringTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<LineStringTZM<T, Z, M>>);
+
+pub type MultiLineString<T> = MultiLineStringTZM<T, NoValue, NoValue>;
+pub type MultiLineStringM<T, M> = MultiLineStringTZM<T, NoValue, M>;
+pub type MultiLineStringZ<T> = MultiLineStringTZM<T, T, NoValue>;
+pub type MultiLineStringZM<T, M> = MultiLineStringTZM<T, T, M>;
 
 impl<T: CoordNum> MultiLineString<T> {
     /// Instantiate Self from the raw content value
