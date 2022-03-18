@@ -208,7 +208,7 @@ impl<T: CoordNum> LineString<T> {
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Point`]s
     pub fn into_points(self) -> Vec<Point<T>> {
-        self.0.into_iter().map(PointTZM).collect()
+        self.0.into_iter().map(Point::from).collect()
     }
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Coordinate`]s
