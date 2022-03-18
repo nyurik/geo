@@ -545,7 +545,7 @@ mod test {
         let gc = GeometryCollection::new_from(vec![geom.clone()]);
         let multi_point = MultiPoint::new(vec![pt]);
         let multi_ls = MultiLineString::new(vec![ls.clone()]);
-        let multi_poly = MultiPolygon(vec![poly.clone()]);
+        let multi_poly = MultiPolygon::new(vec![poly.clone()]);
 
         let _ = pt.intersects(&pt);
         let _ = pt.intersects(&ln);
