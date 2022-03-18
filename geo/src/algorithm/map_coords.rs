@@ -475,7 +475,7 @@ impl<T: CoordNum, NT: CoordNum> MapCoords<T, NT> for GeometryCollection<T> {
     type Output = GeometryCollection<NT>;
 
     fn map_coords(&self, func: impl Fn(&(T, T)) -> (NT, NT) + Copy) -> Self::Output {
-        GeometryCollection(self.iter().map(|g| g.map_coords(func)).collect())
+        GeometryCollection::new_from(self.iter().map(|g| g.map_coords(func)).collect())
     }
 }
 
@@ -486,7 +486,7 @@ impl<T: CoordNum, NT: CoordNum, E> TryMapCoords<T, NT, E> for GeometryCollection
         &self,
         func: impl Fn(&(T, T)) -> Result<(NT, NT), E> + Copy,
     ) -> Result<Self::Output, E> {
-        Ok(GeometryCollection(
+        Ok(GeometryCollection::new_from(
             self.0
                 .iter()
                 .map(|g| g.try_map_coords(func))
@@ -815,7 +815,7 @@ mod test {
 
         assert_eq!(
             gc.map_coords(|&(x, y)| (x + 10., y + 100.)),
-            GeometryCollection(vec![
+            GeometryCollection::new_from(vec![
                 Geometry::Point(Point::new(20., 110.)),
                 Geometry::LineString(LineString::from(vec![(10., 100.), (11., 102.)])),
             ])
