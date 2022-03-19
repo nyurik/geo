@@ -750,7 +750,7 @@ mod test {
     // Tests: Centroid of MultiPolygon
     #[test]
     fn empty_multipolygon_polygon_test() {
-        assert!(MultiPolygon::<f64>(Vec::new()).centroid().is_none());
+        assert!(MultiPolygon::<f64>::new(Vec::new()).centroid().is_none());
     }
     #[test]
     fn multipolygon_one_polygon_test() {

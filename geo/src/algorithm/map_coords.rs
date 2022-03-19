@@ -559,7 +559,7 @@ impl<T: CoordNum, NT: CoordNum, E> TryMapCoords<T, NT, E> for Triangle<T> {
         let p2 = func(&self.1.x_y())?;
         let p3 = func(&self.2.x_y())?;
 
-        Ok(Triangle(
+        Ok(Triangle::new(
             coord! { x: p1.0, y: p1.1 },
             coord! { x: p2.0, y: p2.1 },
             coord! { x: p3.0, y: p3.1 },
@@ -811,7 +811,7 @@ mod test {
         let p1 = Geometry::Point(Point::new(10., 10.));
         let line1 = Geometry::LineString(LineString::from(vec![(0., 0.), (1., 2.)]));
 
-        let gc = GeometryCollection(vec![p1, line1]);
+        let gc = GeometryCollection::new_from(vec![p1, line1]);
 
         assert_eq!(
             gc.map_coords(|&(x, y)| (x + 10., y + 100.)),

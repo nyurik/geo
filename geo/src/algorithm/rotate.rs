@@ -660,7 +660,7 @@ mod test {
         assert_eq!(empty_linestring, rotated_empty_linestring);
 
         // multi line string
-        let empty_multilinestring: MultiLineString<f64> = MultiLineString::<f64>(vec![]);
+        let empty_multilinestring = MultiLineString::new(vec![]);
         let rotated_empty_multilinestring = empty_multilinestring.rotate_around_centroid(90.);
         assert_eq!(empty_multilinestring, rotated_empty_multilinestring);
 
