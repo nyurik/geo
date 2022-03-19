@@ -1,4 +1,6 @@
-use crate::{polygon, CoordNum, CoordTZM, Coordinate, Line, Measure, NoValue, Polygon, ZCoord};
+use crate::{
+    polygon, CoordNum, CoordTZM, Coordinate, LineTZM, Measure, NoValue, PolygonTZM, ZCoord,
+};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -20,21 +22,21 @@ pub type TriangleM<T, M> = TriangleTZM<T, NoValue, M>;
 pub type TriangleZ<T> = TriangleTZM<T, T, NoValue>;
 pub type TriangleZM<T, M> = TriangleTZM<T, T, M>;
 
-impl<T: CoordNum> Triangle<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> TriangleTZM<T, Z, M> {
     /// Instantiate Self from the raw content value
-    pub fn new(v1: Coordinate<T>, v2: Coordinate<T>, v3: Coordinate<T>) -> Self {
+    pub fn new(v1: CoordTZM<T, Z, M>, v2: CoordTZM<T, Z, M>, v3: CoordTZM<T, Z, M>) -> Self {
         Self(v1, v2, v3)
     }
 
-    pub fn to_array(&self) -> [Coordinate<T>; 3] {
+    pub fn to_array(&self) -> [CoordTZM<T, Z, M>; 3] {
         [self.0, self.1, self.2]
     }
 
-    pub fn to_lines(&self) -> [Line<T>; 3] {
+    pub fn to_lines(&self) -> [LineTZM<T, Z, M>; 3] {
         [
-            Line::new(self.0, self.1),
-            Line::new(self.1, self.2),
-            Line::new(self.2, self.0),
+            LineTZM::new(self.0, self.1),
+            LineTZM::new(self.1, self.2),
+            LineTZM::new(self.2, self.0),
         ]
     }
 
@@ -61,7 +63,7 @@ impl<T: CoordNum> Triangle<T> {
     ///     ],
     /// );
     /// ```
-    pub fn to_polygon(self) -> Polygon<T> {
+    pub fn to_polygon(self) -> PolygonTZM<T, Z, M> {
         polygon![self.0, self.1, self.2, self.0]
     }
 }

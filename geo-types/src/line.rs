@@ -1,4 +1,4 @@
-use crate::{CoordNum, CoordTZM, Coordinate, Measure, NoValue, Point, ZCoord};
+use crate::{CoordNum, CoordTZM, Coordinate, Measure, NoValue, Point, PointTZM, ZCoord};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
@@ -151,16 +151,18 @@ impl<T: CoordNum> Line<T> {
     pub fn determinant(&self) -> T {
         self.start.x * self.end.y - self.start.y * self.end.x
     }
+}
 
-    pub fn start_point(&self) -> Point<T> {
-        Point::from(self.start)
+impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
+    pub fn start_point(&self) -> PointTZM<T, Z, M> {
+        PointTZM::from(self.start)
     }
 
-    pub fn end_point(&self) -> Point<T> {
-        Point::from(self.end)
+    pub fn end_point(&self) -> PointTZM<T, Z, M> {
+        PointTZM::from(self.end)
     }
 
-    pub fn points(&self) -> (Point<T>, Point<T>) {
+    pub fn points(&self) -> (PointTZM<T, Z, M>, PointTZM<T, Z, M>) {
         (self.start_point(), self.end_point())
     }
 }

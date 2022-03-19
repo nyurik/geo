@@ -136,7 +136,7 @@ macro_rules! coord {
 /// [`LineString`]: ./line_string/struct.LineString.html
 #[macro_export]
 macro_rules! line_string {
-    () => { $crate::LineStringTZM(vec![]) };
+    () => { $crate::LineStringTZM::new(vec![]) };
     (
         $(( $($tag:tt : $val:expr),* $(,)? )),*
         $(,)?
@@ -151,7 +151,7 @@ macro_rules! line_string {
         $($coord:expr),*
         $(,)?
     ) => {
-        $crate::LineStringTZM(
+        $crate::LineStringTZM::new(
             <[_]>::into_vec(
                 ::std::boxed::Box::new(
                     [$($coord), *]

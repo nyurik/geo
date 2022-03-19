@@ -1,4 +1,4 @@
-use crate::{CoordNum, LineString, LineStringTZM, Measure, NoValue, Rect, Triangle, ZCoord};
+use crate::{CoordNum, LineStringTZM, Measure, NoValue, Rect, TriangleTZM, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
@@ -75,7 +75,7 @@ pub type PolygonM<T, M> = PolygonTZM<T, NoValue, M>;
 pub type PolygonZ<T> = PolygonTZM<T, T, NoValue>;
 pub type PolygonZM<T, M> = PolygonTZM<T, T, M>;
 
-impl<T: CoordNum> Polygon<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     /// Create a new `Polygon` with the provided exterior `LineString` ring and
     /// interior `LineString` rings.
     ///
@@ -126,7 +126,10 @@ impl<T: CoordNum> Polygon<T> {
     ///     &LineString::from(vec![(0., 0.), (1., 1.), (1., 0.), (0., 0.),])
     /// );
     /// ```
-    pub fn new(mut exterior: LineString<T>, mut interiors: Vec<LineString<T>>) -> Self {
+    pub fn new(
+        mut exterior: LineStringTZM<T, Z, M>,
+        mut interiors: Vec<LineStringTZM<T, Z, M>>,
+    ) -> Self {
         exterior.close();
         for interior in &mut interiors {
             interior.close();
@@ -172,7 +175,8 @@ impl<T: CoordNum> Polygon<T> {
     ///     ])]
     /// );
     /// ```
-    pub fn into_inner(self) -> (LineString<T>, Vec<LineString<T>>) {
+    #[allow(clippy::type_complexity)]
+    pub fn into_inner(self) -> (LineStringTZM<T, Z, M>, Vec<LineStringTZM<T, Z, M>>) {
         (self.exterior, self.interiors)
     }
 
@@ -189,7 +193,7 @@ impl<T: CoordNum> Polygon<T> {
     ///
     /// assert_eq!(polygon.exterior(), &exterior);
     /// ```
-    pub fn exterior(&self) -> &LineString<T> {
+    pub fn exterior(&self) -> &LineStringTZM<T, Z, M> {
         &self.exterior
     }
 
@@ -242,7 +246,7 @@ impl<T: CoordNum> Polygon<T> {
     /// [will be closed]: #linestring-closing-operation
     pub fn exterior_mut<F>(&mut self, f: F)
     where
-        F: FnOnce(&mut LineString<T>),
+        F: FnOnce(&mut LineStringTZM<T, Z, M>),
     {
         f(&mut self.exterior);
         self.exterior.close();
@@ -269,7 +273,7 @@ impl<T: CoordNum> Polygon<T> {
     ///
     /// assert_eq!(interiors, polygon.interiors());
     /// ```
-    pub fn interiors(&self) -> &[LineString<T>] {
+    pub fn interiors(&self) -> &[LineStringTZM<T, Z, M>] {
         &self.interiors
     }
 
@@ -344,7 +348,7 @@ impl<T: CoordNum> Polygon<T> {
     /// [will be closed]: #linestring-closing-operation
     pub fn interiors_mut<F>(&mut self, f: F)
     where
-        F: FnOnce(&mut [LineString<T>]),
+        F: FnOnce(&mut [LineStringTZM<T, Z, M>]),
     {
         f(&mut self.interiors);
         for interior in &mut self.interiors {
@@ -382,7 +386,7 @@ impl<T: CoordNum> Polygon<T> {
     /// ```
     ///
     /// [will be closed]: #linestring-closing-operation
-    pub fn interiors_push(&mut self, new_interior: impl Into<LineString<T>>) {
+    pub fn interiors_push(&mut self, new_interior: impl Into<LineStringTZM<T, Z, M>>) {
         let mut new_interior = new_interior.into();
         new_interior.close();
         self.interiors.push(new_interior);
@@ -405,9 +409,9 @@ impl<T: CoordNum> From<Rect<T>> for Polygon<T> {
     }
 }
 
-impl<T: CoordNum> From<Triangle<T>> for Polygon<T> {
-    fn from(t: Triangle<T>) -> Self {
-        Polygon::new(vec![t.0, t.1, t.2, t.0].into(), Vec::new())
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<TriangleTZM<T, Z, M>> for PolygonTZM<T, Z, M> {
+    fn from(t: TriangleTZM<T, Z, M>) -> Self {
+        Self::new(vec![t.0, t.1, t.2, t.0].into(), Vec::new())
     }
 }
 

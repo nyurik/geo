@@ -40,9 +40,10 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> CoordTZM<T, Z, M> {
 }
 
 pub type Coordinate<T> = CoordTZM<T, NoValue, NoValue>;
-pub type CoordinateM<T, M> = CoordTZM<T, NoValue, M>;
-pub type CoordinateZ<T> = CoordTZM<T, T, NoValue>;
-pub type CoordinateZM<T, M> = CoordTZM<T, T, M>;
+pub type Coord<T> = CoordTZM<T, NoValue, NoValue>;
+pub type CoordM<T, M> = CoordTZM<T, NoValue, M>;
+pub type CoordZ<T> = CoordTZM<T, T, NoValue>;
+pub type CoordZM<T, M> = CoordTZM<T, T, M>;
 
 impl<T: CoordNum> From<(T, T)> for Coordinate<T> {
     fn from(coords: (T, T)) -> Self {

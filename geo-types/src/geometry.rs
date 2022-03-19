@@ -46,51 +46,53 @@ pub type GeometryM<T, M> = GeometryTZM<T, NoValue, M>;
 pub type GeometryZ<T> = GeometryTZM<T, T, NoValue>;
 pub type GeometryZM<T, M> = GeometryTZM<T, T, M>;
 
-impl<T: CoordNum> From<Point<T>> for Geometry<T> {
-    fn from(x: Point<T>) -> Self {
-        Geometry::Point(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<PointTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
+    fn from(x: PointTZM<T, Z, M>) -> Self {
+        Self::Point(x)
     }
 }
-impl<T: CoordNum> From<Line<T>> for Geometry<T> {
-    fn from(x: Line<T>) -> Self {
-        Geometry::Line(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<LineTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
+    fn from(x: LineTZM<T, Z, M>) -> Self {
+        Self::Line(x)
     }
 }
-impl<T: CoordNum> From<LineString<T>> for Geometry<T> {
-    fn from(x: LineString<T>) -> Self {
-        Geometry::LineString(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<LineStringTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
+    fn from(x: LineStringTZM<T, Z, M>) -> Self {
+        Self::LineString(x)
     }
 }
-impl<T: CoordNum> From<Polygon<T>> for Geometry<T> {
-    fn from(x: Polygon<T>) -> Self {
-        Geometry::Polygon(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<PolygonTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
+    fn from(x: PolygonTZM<T, Z, M>) -> Self {
+        Self::Polygon(x)
     }
 }
-impl<T: CoordNum> From<MultiPoint<T>> for Geometry<T> {
-    fn from(x: MultiPoint<T>) -> Self {
-        Geometry::MultiPoint(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiPointTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
+    fn from(x: MultiPointTZM<T, Z, M>) -> Self {
+        Self::MultiPoint(x)
     }
 }
-impl<T: CoordNum> From<MultiLineString<T>> for Geometry<T> {
-    fn from(x: MultiLineString<T>) -> Self {
-        Geometry::MultiLineString(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiLineStringTZM<T, Z, M>>
+    for GeometryTZM<T, Z, M>
+{
+    fn from(x: MultiLineStringTZM<T, Z, M>) -> Self {
+        Self::MultiLineString(x)
     }
 }
-impl<T: CoordNum> From<MultiPolygon<T>> for Geometry<T> {
-    fn from(x: MultiPolygon<T>) -> Self {
-        Geometry::MultiPolygon(x)
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiPolygonTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
+    fn from(x: MultiPolygonTZM<T, Z, M>) -> Self {
+        Self::MultiPolygon(x)
     }
 }
 
 impl<T: CoordNum> From<Rect<T>> for Geometry<T> {
     fn from(x: Rect<T>) -> Self {
-        Geometry::Rect(x)
+        Self::Rect(x)
     }
 }
 
 impl<T: CoordNum> From<Triangle<T>> for Geometry<T> {
     fn from(x: Triangle<T>) -> Self {
-        Geometry::Triangle(x)
+        Self::Triangle(x)
     }
 }
 

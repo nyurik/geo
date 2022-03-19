@@ -90,7 +90,7 @@ impl<S: Default + Copy + PartialEq + Debug> Srid for S {}
 pub struct NoValue;
 
 mod coordinate;
-pub use crate::coordinate::{CoordTZM, Coordinate, CoordinateM, CoordinateZ, CoordinateZM};
+pub use crate::coordinate::{Coord, CoordM, CoordTZM, CoordZ, CoordZM, Coordinate};
 
 mod point;
 pub use crate::point::{Point, PointM, PointTZM, PointZ, PointZM};
@@ -103,7 +103,8 @@ pub use crate::line::{Line, LineM, LineTZM, LineZ, LineZM};
 
 mod line_string;
 pub use crate::line_string::{
-    LineString, LineStringM, LineStringTZM, LineStringZ, LineStringZM, PointsIter,
+    LineString, LineStringM, LineStringTZM, LineStringZ, LineStringZM, PointsIter, PointsIterM,
+    PointsIterTZM, PointsIterZ, PointsIterZM,
 };
 
 mod multi_line_string;
