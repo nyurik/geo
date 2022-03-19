@@ -21,29 +21,34 @@ pub type LineM<T, M> = LineTZM<T, NoValue, M>;
 pub type LineZ<T> = LineTZM<T, T, NoValue>;
 pub type LineZM<T, M> = LineTZM<T, T, M>;
 
-impl<T: CoordNum> Line<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
     /// Creates a new line segment.
     ///
     /// # Examples
     ///
     /// ```
-    /// use geo_types::{coord, Line};
+    /// use geo_types::{coord, Line, LineZM};
     ///
     /// let line = Line::new(coord! { x: 0., y: 0. }, coord! { x: 1., y: 2. });
-    ///
     /// assert_eq!(line.start, coord! { x: 0., y: 0. });
     /// assert_eq!(line.end, coord! { x: 1., y: 2. });
+    ///
+    /// let line = LineZM::new(coord! { x: 0., y: 0., z: 0., m: 1 }, coord! { x: 1., y: 2., z: 3., m: 4 });
+    /// assert_eq!(line.start, coord! { x: 0., y: 0., z: 0., m: 1 });
+    /// assert_eq!(line.end, coord! { x: 1., y: 2., z: 3., m: 4 });
     /// ```
     pub fn new<C>(start: C, end: C) -> Self
     where
-        C: Into<Coordinate<T>>,
+        C: Into<CoordTZM<T, Z, M>>,
     {
         Self {
             start: start.into(),
             end: end.into(),
         }
     }
+}
 
+impl<T: CoordNum> Line<T> {
     /// Calculate the difference in coordinates (Δx, Δy).
     pub fn delta(&self) -> Coordinate<T> {
         self.end - self.start
