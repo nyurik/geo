@@ -470,7 +470,8 @@ mod tests {
     #[test]
     fn convert_empty_multilinestring() {
         let w_multilinestring = MultiLineString(vec![]).as_item();
-        let g_multilinestring: geo_types::MultiLineString<f64> = geo_types::MultiLineString::new(vec![]);
+        let g_multilinestring: geo_types::MultiLineString<f64> =
+            geo_types::MultiLineString::new(vec![]);
         assert_eq!(
             geo_types::Geometry::MultiLineString(g_multilinestring),
             w_multilinestring.try_into().unwrap()
@@ -510,10 +511,11 @@ mod tests {
             ]),
         ])
         .as_item();
-        let g_multilinestring: geo_types::MultiLineString<f64> = geo_types::MultiLineString::new(vec![
-            vec![(10., 20.), (30., 40.)].into(),
-            vec![(50., 60.), (70., 80.)].into(),
-        ]);
+        let g_multilinestring: geo_types::MultiLineString<f64> =
+            geo_types::MultiLineString::new(vec![
+                vec![(10., 20.), (30., 40.)].into(),
+                vec![(50., 60.), (70., 80.)].into(),
+            ]);
         assert_eq!(
             geo_types::Geometry::MultiLineString(g_multilinestring),
             w_multilinestring.try_into().unwrap()
@@ -851,10 +853,11 @@ mod tests {
             vec![(0., 0.), (20., 40.), (40., 0.), (0., 0.)].into(),
             vec![],
         );
-        let g_multilinestring: geo_types::MultiLineString<f64> = geo_types::MultiLineString::new(vec![
-            vec![(10., 20.), (30., 40.)].into(),
-            vec![(50., 60.), (70., 80.)].into(),
-        ]);
+        let g_multilinestring: geo_types::MultiLineString<f64> =
+            geo_types::MultiLineString::new(vec![
+                vec![(10., 20.), (30., 40.)].into(),
+                vec![(50., 60.), (70., 80.)].into(),
+            ]);
         let g_multipoint: geo_types::MultiPoint<f64> = vec![(10., 20.), (30., 40.)].into();
         let g_multipolygon: geo_types::MultiPolygon<f64> = geo_types::MultiPolygon::new(vec![
             geo_types::Polygon::new(

@@ -1,6 +1,6 @@
 use crate::{
     CoordFloat, Coordinate, Geometry, GeometryCollection, LineString, MultiLineString, MultiPoint,
-    MultiPolygon, Point, PointTZM, Polygon, Rect, Triangle,
+    MultiPolygon, Point, Polygon, Rect, Triangle,
 };
 use std::mem;
 

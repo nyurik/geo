@@ -80,25 +80,25 @@ pub type GeometryCollectionZM<T, M> = GeometryCollectionTZM<T, T, M>;
 
 // Implementing Default by hand because T does not have Default restriction
 // todo: consider adding Default as a CoordNum requirement
-impl<T: CoordNum> Default for GeometryCollection<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Default for GeometryCollectionTZM<T, Z, M> {
     fn default() -> Self {
         Self(Vec::new())
     }
 }
 
-impl<T: CoordNum> GeometryCollection<T> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> GeometryCollectionTZM<T, Z, M> {
     /// Return an empty GeometryCollection
     #[deprecated(
         note = "Will be replaced with a parametrized version in upcoming version. Use GeometryCollection::default() instead"
     )]
     pub fn new() -> Self {
-        GeometryCollection::default()
+        GeometryCollectionTZM::default()
     }
 
     /// DO NOT USE!
     /// This fn will be renamed to `new` in the upcoming version.
     /// This fn is not marked as deprecated because it would require extensive refactoring of the geo code.
-    pub fn new_from(value: Vec<Geometry<T>>) -> Self {
+    pub fn new_from(value: Vec<GeometryTZM<T, Z, M>>) -> Self {
         Self(value)
     }
 
