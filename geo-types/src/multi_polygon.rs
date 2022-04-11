@@ -1,10 +1,11 @@
-use crate::{CoordNum, Measure, NoValue, PolygonTZM, ZCoord};
-
+use crate::{CoordNum, Measure, NoValue, Polygon, ZCoord};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 use std::iter::FromIterator;
 
-/// A collection of [`Polygon`s](struct.Polygon.html). Can
+/// A generic collection of polygons with 3D space + Measure value support.
+///
+/// A collection of [Polygon]s. Can
 /// be created from a `Vec` of `Polygon`s, or from an
 /// Iterator which yields `Polygon`s. Iterating over this
 /// object yields the component `Polygon`s.
@@ -27,75 +28,87 @@ use std::iter::FromIterator;
 /// predicates that operate on it.
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct MultiPolygonTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<PolygonTZM<T, Z, M>>);
+pub struct MultiPolygon<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue>(
+    pub Vec<Polygon<T, Z, M>>,
+);
 
-pub type MultiPolygon<T> = MultiPolygonTZM<T, NoValue, NoValue>;
-pub type MultiPolygonM<T, M> = MultiPolygonTZM<T, NoValue, M>;
-pub type MultiPolygonZ<T> = MultiPolygonTZM<T, T, NoValue>;
-pub type MultiPolygonZM<T, M> = MultiPolygonTZM<T, T, M>;
+/// A collection of polygons with a measurement value in 2D space.
+///
+/// See [MultiPolygon]
+pub type MultiPolygonM<T> = MultiPolygon<T, NoValue, T>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure, IP: Into<PolygonTZM<T, Z, M>>> From<IP>
-    for MultiPolygonTZM<T, Z, M>
+/// A collection of polygons in 3D space.
+///
+/// See [MultiPolygon]
+pub type MultiPolygonZ<T> = MultiPolygon<T, T, NoValue>;
+
+/// A collection of polygons with a measurement value in 3D space.
+///
+/// See [MultiPolygon]
+pub type MultiPolygonZM<T> = MultiPolygon<T, T, T>;
+
+impl<T: CoordNum, Z: ZCoord, M: Measure, IP: Into<Polygon<T, Z, M>>> From<IP>
+    for MultiPolygon<T, Z, M>
 {
     fn from(x: IP) -> Self {
         Self(vec![x.into()])
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure, IP: Into<PolygonTZM<T, Z, M>>> From<Vec<IP>>
-    for MultiPolygonTZM<T, Z, M>
+impl<T: CoordNum, Z: ZCoord, M: Measure, IP: Into<Polygon<T, Z, M>>> From<Vec<IP>>
+    for MultiPolygon<T, Z, M>
 {
     fn from(x: Vec<IP>) -> Self {
         Self(x.into_iter().map(|p| p.into()).collect())
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure, IP: Into<PolygonTZM<T, Z, M>>> FromIterator<IP>
-    for MultiPolygonTZM<T, Z, M>
+impl<T: CoordNum, Z: ZCoord, M: Measure, IP: Into<Polygon<T, Z, M>>> FromIterator<IP>
+    for MultiPolygon<T, Z, M>
 {
     fn from_iter<I: IntoIterator<Item = IP>>(iter: I) -> Self {
         Self(iter.into_iter().map(|p| p.into()).collect())
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for MultiPolygonTZM<T, Z, M> {
-    type Item = PolygonTZM<T, Z, M>;
-    type IntoIter = ::std::vec::IntoIter<PolygonTZM<T, Z, M>>;
+impl<T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for MultiPolygon<T, Z, M> {
+    type Item = Polygon<T, Z, M>;
+    type IntoIter = ::std::vec::IntoIter<Polygon<T, Z, M>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
 }
 
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a MultiPolygonTZM<T, Z, M> {
-    type Item = &'a PolygonTZM<T, Z, M>;
-    type IntoIter = ::std::slice::Iter<'a, PolygonTZM<T, Z, M>>;
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a MultiPolygon<T, Z, M> {
+    type Item = &'a Polygon<T, Z, M>;
+    type IntoIter = ::std::slice::Iter<'a, Polygon<T, Z, M>>;
 
     fn into_iter(self) -> Self::IntoIter {
         (&self.0).iter()
     }
 }
 
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a mut MultiPolygonTZM<T, Z, M> {
-    type Item = &'a mut PolygonTZM<T, Z, M>;
-    type IntoIter = ::std::slice::IterMut<'a, PolygonTZM<T, Z, M>>;
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a mut MultiPolygon<T, Z, M> {
+    type Item = &'a mut Polygon<T, Z, M>;
+    type IntoIter = ::std::slice::IterMut<'a, Polygon<T, Z, M>>;
 
     fn into_iter(self) -> Self::IntoIter {
         (&mut self.0).iter_mut()
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> MultiPolygonTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> MultiPolygon<T, Z, M> {
     /// Instantiate Self from the raw content value
-    pub fn new(value: Vec<PolygonTZM<T, Z, M>>) -> Self {
+    pub fn new(value: Vec<Polygon<T, Z, M>>) -> Self {
         Self(value)
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &PolygonTZM<T, Z, M>> {
+    pub fn iter(&self) -> impl Iterator<Item = &Polygon<T, Z, M>> {
         self.0.iter()
     }
 
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut PolygonTZM<T, Z, M>> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Polygon<T, Z, M>> {
         self.0.iter_mut()
     }
 }

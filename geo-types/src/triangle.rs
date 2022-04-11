@@ -1,40 +1,54 @@
-use crate::{polygon, CoordNum, CoordTZM, LineTZM, Measure, NoValue, PolygonTZM, ZCoord};
-
+use crate::{polygon, CoordNum, Coordinate, Line, Measure, NoValue, Polygon, ZCoord};
+#[cfg(doc)]
+use crate::{PolygonM, PolygonZ, PolygonZM};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-/// A bounded 2D area whose three vertices are defined by
+/// A generic area with 3D+M support whose three vertices are defined by
 /// `Coordinate`s. The semantics and validity are that of
-/// the equivalent [`Polygon`]; in addition, the three
+/// the equivalent [Polygon]; in addition, the three
 /// vertices must not be collinear and they must be distinct.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct TriangleTZM<T: CoordNum, Z: ZCoord, M: Measure>(
-    pub CoordTZM<T, Z, M>,
-    pub CoordTZM<T, Z, M>,
-    pub CoordTZM<T, Z, M>,
+pub struct Triangle<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue>(
+    pub Coordinate<T, Z, M>,
+    pub Coordinate<T, Z, M>,
+    pub Coordinate<T, Z, M>,
 );
 
-pub type Triangle<T> = TriangleTZM<T, NoValue, NoValue>;
-pub type TriangleM<T, M> = TriangleTZM<T, NoValue, M>;
-pub type TriangleZ<T> = TriangleTZM<T, T, NoValue>;
-pub type TriangleZM<T, M> = TriangleTZM<T, T, M>;
+/// A bounded 2D area whose three vertices are defined by
+/// `Coordinate`s. The semantics and validity are that of
+/// the equivalent [PolygonM]; in addition, the three
+/// vertices must not be collinear and they must be distinct.
+pub type TriangleM<T> = Triangle<T, NoValue, T>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> TriangleTZM<T, Z, M> {
+/// A bounded 2D area whose three vertices are defined by
+/// `Coordinate`s. The semantics and validity are that of
+/// the equivalent [PolygonZ]; in addition, the three
+/// vertices must not be collinear and they must be distinct.
+pub type TriangleZ<T> = Triangle<T, T, NoValue>;
+
+/// A bounded 2D area whose three vertices are defined by
+/// `Coordinate`s. The semantics and validity are that of
+/// the equivalent [PolygonZM]; in addition, the three
+/// vertices must not be collinear and they must be distinct.
+pub type TriangleZM<T> = Triangle<T, T, T>;
+
+impl<T: CoordNum, Z: ZCoord, M: Measure> Triangle<T, Z, M> {
     /// Instantiate Self from the raw content value
-    pub fn new(v1: CoordTZM<T, Z, M>, v2: CoordTZM<T, Z, M>, v3: CoordTZM<T, Z, M>) -> Self {
+    pub fn new(v1: Coordinate<T, Z, M>, v2: Coordinate<T, Z, M>, v3: Coordinate<T, Z, M>) -> Self {
         Self(v1, v2, v3)
     }
 
-    pub fn to_array(&self) -> [CoordTZM<T, Z, M>; 3] {
+    pub fn to_array(&self) -> [Coordinate<T, Z, M>; 3] {
         [self.0, self.1, self.2]
     }
 
-    pub fn to_lines(&self) -> [LineTZM<T, Z, M>; 3] {
+    pub fn to_lines(&self) -> [Line<T, Z, M>; 3] {
         [
-            LineTZM::new(self.0, self.1),
-            LineTZM::new(self.1, self.2),
-            LineTZM::new(self.2, self.0),
+            Line::new(self.0, self.1),
+            Line::new(self.1, self.2),
+            Line::new(self.2, self.0),
         ]
     }
 
@@ -61,13 +75,13 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> TriangleTZM<T, Z, M> {
     ///     ],
     /// );
     /// ```
-    pub fn to_polygon(self) -> PolygonTZM<T, Z, M> {
+    pub fn to_polygon(self) -> Polygon<T, Z, M> {
         polygon![self.0, self.1, self.2, self.0]
     }
 }
 
-impl<IC: Into<CoordTZM<T, Z, M>> + Copy, T: CoordNum, Z: ZCoord, M: Measure> From<[IC; 3]>
-    for TriangleTZM<T, Z, M>
+impl<IC: Into<Coordinate<T, Z, M>> + Copy, T: CoordNum, Z: ZCoord, M: Measure> From<[IC; 3]>
+    for Triangle<T, Z, M>
 {
     fn from(array: [IC; 3]) -> Self {
         Self(array[0].into(), array[1].into(), array[2].into())

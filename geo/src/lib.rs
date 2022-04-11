@@ -180,15 +180,14 @@ pub use crate::algorithm::*;
 pub use crate::types::Closest;
 
 pub use geo_types::{
-    coord, line_string, point, polygon, CoordFloat, CoordM, CoordNum, CoordTZM, CoordZ, CoordZM,
-    Coordinate, Geometry, GeometryCollection, GeometryCollectionM, GeometryCollectionTZM,
-    GeometryCollectionZ, GeometryCollectionZM, GeometryM, GeometryTZM, GeometryZ, GeometryZM, Line,
-    LineM, LineString, LineStringM, LineStringTZM, LineStringZ, LineStringZM, LineTZM, LineZ,
-    LineZM, MultiLineString, MultiLineStringM, MultiLineStringTZM, MultiLineStringZ,
-    MultiLineStringZM, MultiPoint, MultiPointM, MultiPointTZM, MultiPointZ, MultiPointZM,
-    MultiPolygon, MultiPolygonM, MultiPolygonTZM, MultiPolygonZ, MultiPolygonZM, NoValue, Point,
-    PointM, PointTZM, PointZ, PointZM, Polygon, PolygonM, PolygonTZM, PolygonZ, PolygonZM, Rect,
-    RectM, RectTZM, RectZ, RectZM, Triangle, TriangleM, TriangleTZM, TriangleZ, TriangleZM,
+    coord, line_string, point, polygon, CoordFloat, CoordNum, Coordinate, CoordinateM, CoordinateZ,
+    CoordinateZM, Geometry, GeometryCollection, GeometryCollectionM, GeometryCollectionZ,
+    GeometryCollectionZM, GeometryM, GeometryZ, GeometryZM, Line, LineM, LineString, LineStringM,
+    LineStringZ, LineStringZM, LineZ, LineZM, MultiLineString, MultiLineStringM, MultiLineStringZ,
+    MultiLineStringZM, MultiPoint, MultiPointM, MultiPointZ, MultiPointZM, MultiPolygon,
+    MultiPolygonM, MultiPolygonZ, MultiPolygonZM, NoValue, Point, PointM, PointZ, PointZM, Polygon,
+    PolygonM, PolygonZ, PolygonZM, Rect, RectM, RectZ, RectZM, Triangle, TriangleM, TriangleZ,
+    TriangleZM,
 };
 
 /// This module includes all the functions of geometric calculations

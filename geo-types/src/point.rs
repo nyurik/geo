@@ -1,16 +1,14 @@
-use crate::{point, CoordFloat, CoordNum, CoordTZM, Measure, NoValue, ZCoord};
+use crate::*;
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-/// A single point in 2D space.
+/// A generic single point in 3D space with a measurement value.
 ///
-/// Points can be created using the [`Point::new`] constructor,
-/// the [`point!`] macro, or from a `Coordinate`, two-element
-/// tuples, or arrays – see the `From` impl section for a
-/// complete list.
+/// Points can be created using the the [point!] macro,
+/// or from a [Coordinate] or other types – see the `From` implementations below.
 ///
 /// # Semantics
 ///
@@ -21,22 +19,55 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssi
 /// # Examples
 ///
 /// ```
-/// use geo_types::{coord, Point};
-/// let p1: Point<f64> = (0., 1.).into();
-/// let c = coord! { x: 10., y: 20. };
-/// let p2: Point<f64> = c.into();
+/// use geo_types::{coord, Coordinate, Point};
+/// let c: Coordinate<f64, f64, i32> = coord! { x: 10., y: 20., z: 30., m: 40 };
+/// let p = Point::from(c);
 /// ```
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct PointTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub CoordTZM<T, Z, M>);
+pub struct Point<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue>(pub Coordinate<T, Z, M>);
 
-pub type Point<T> = PointTZM<T, NoValue, NoValue>;
-pub type PointM<T, M> = PointTZM<T, NoValue, M>;
-pub type PointZ<T> = PointTZM<T, T, NoValue>;
-pub type PointZM<T, M> = PointTZM<T, T, M>;
+/// A single point in 2D space + Measure value.
+///
+/// Points can be created using the the [point!] macro,
+/// or from a [CoordinateM] or other types – see the `From` implementations below.
+///
+/// # Examples
+///
+/// ```
+/// use geo_types::{coord, PointM};
+/// let p = PointM::from(coord! { x: 10., y: 20., m: 40. });
+/// ```
+pub type PointM<T> = Point<T, NoValue, T>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<CoordTZM<T, Z, M>> for PointTZM<T, Z, M> {
-    fn from(x: CoordTZM<T, Z, M>) -> Self {
+/// A single point in 3D space.
+///
+/// Points can be created using the the [point!] macro,
+/// or from a [CoordinateZ] or other types – see the `From` implementations below.
+///
+/// # Examples
+///
+/// ```
+/// use geo_types::{coord, PointZ};
+/// let p = PointZ::from(coord! { x: 10., y: 20., z: 30. });
+/// ```
+pub type PointZ<T> = Point<T, T, NoValue>;
+
+/// A single point in 3D space with a measurement value.
+///
+/// Points can be created using the the [point!] macro,
+/// or from a [CoordinateZM] or other types – see the `From` implementations below.
+///
+/// # Examples
+///
+/// ```
+/// use geo_types::{coord, PointZM};
+/// let p = PointZM::from(coord! { x: 10., y: 20., z: 30., m: 40. });
+/// ```
+pub type PointZM<T> = Point<T, T, T>;
+
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Coordinate<T, Z, M>> for Point<T, Z, M> {
+    fn from(x: Coordinate<T, Z, M>) -> Self {
         Self(x)
     }
 }
@@ -83,7 +114,7 @@ impl<T: CoordNum> Point<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> PointTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Point<T, Z, M> {
     /// Returns the x/horizontal component of the point.
     ///
     /// # Examples
@@ -631,17 +662,17 @@ mod test {
         assert_relative_eq!(p.z(), 3.0);
         assert_eq!(p.m(), NoValue);
 
-        let p: PointM<_, _> = point! { x: 1.0, y: 2.0, m: 4_u8 };
+        let p: PointM<_> = point! { x: 1.0, y: 2.0, m: 4.0 };
         assert_relative_eq!(p.x(), 1.0);
         assert_relative_eq!(p.y(), 2.0);
         assert_eq!(p.z(), NoValue);
-        assert_eq!(p.m(), 4_u8);
+        assert_eq!(p.m(), 4.0);
 
-        let p: PointZM<_, _> = point! { x: 1_i32, y: 2_i32, z: 3_i32, m: 4.0_f64 };
+        let p: PointZM<_> = point! { x: 1_i32, y: 2_i32, z: 3_i32, m: 4_i32 };
         assert_eq!(p.x(), 1);
         assert_eq!(p.y(), 2);
         assert_eq!(p.z(), 3);
-        assert_relative_eq!(p.m(), 4.0);
+        assert_eq!(p.m(), 4);
     }
 
     #[test]

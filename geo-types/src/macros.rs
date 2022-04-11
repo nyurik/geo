@@ -1,7 +1,6 @@
 /// Creates a [`Point`] from the given coordinates.
 ///
 /// ```txt
-/// point!(<x_number>, <y_number>)
 /// point! { x: <number>, y: <number> }
 /// point!(<coordinate>)
 /// ```
@@ -31,7 +30,7 @@ macro_rules! point {
         $crate::point! ( $crate::coord! { $( $tag: $val , )* } )
     };
     ( $coord:expr $(,)? ) => {
-        $crate::PointTZM::from($coord)
+        $crate::Point::from($coord)
     };
 }
 
@@ -57,7 +56,7 @@ macro_rules! point {
 #[macro_export]
 macro_rules! coord {
     (x: $x:expr, y: $y:expr $(,)* ) => {
-        $crate::CoordTZM::new(
+        $crate::Coordinate::new(
             $x,
             $y,
             $crate::NoValue::default(),
@@ -65,13 +64,13 @@ macro_rules! coord {
         )
     };
     (x: $x:expr, y: $y:expr, z: $z:expr $(,)* ) => {
-        $crate::CoordTZM::new($x, $y, $z, $crate::NoValue::default())
+        $crate::Coordinate::new($x, $y, $z, $crate::NoValue::default())
     };
     (x: $x:expr, y: $y:expr, m: $m:expr $(,)* ) => {
-        $crate::CoordTZM::new($x, $y, $crate::NoValue::default(), $m)
+        $crate::Coordinate::new($x, $y, $crate::NoValue::default(), $m)
     };
     (x: $x:expr, y: $y:expr, z: $z:expr, m: $m:expr $(,)* ) => {
-        $crate::CoordTZM::new($x, $y, $z, $m)
+        $crate::Coordinate::new($x, $y, $z, $m)
     };
 }
 
@@ -138,7 +137,7 @@ macro_rules! coord {
 /// [`LineString`]: ./line_string/struct.LineString.html
 #[macro_export]
 macro_rules! line_string {
-    () => { $crate::LineStringTZM::new(vec![]) };
+    () => { $crate::LineString::new(vec![]) };
     (
         $(( $($tag:tt : $val:expr),* $(,)? )),*
         $(,)?
@@ -153,7 +152,7 @@ macro_rules! line_string {
         $($coord:expr),*
         $(,)?
     ) => {
-        $crate::LineStringTZM::new(
+        $crate::LineString::new(
             <[_]>::into_vec(
                 ::std::boxed::Box::new(
                     [$($coord), *]
@@ -231,7 +230,7 @@ macro_rules! line_string {
 /// [`Polygon`]: ./struct.Polygon.html
 #[macro_export]
 macro_rules! polygon {
-    () => { $crate::PolygonTZM::new(line_string![], vec![]) };
+    () => { $crate::Polygon::new(line_string![], vec![]) };
     (
         exterior: [
             $(( $($exterior_tag:tt : $exterior_val:expr),* $(,)? )),*
@@ -273,7 +272,7 @@ macro_rules! polygon {
         ]
         $(,)?
     ) => {
-        $crate::PolygonTZM::new(
+        $crate::Polygon::new(
             $crate::line_string![
                 $($exterior_coord), *
             ],
@@ -300,7 +299,7 @@ macro_rules! polygon {
         $($coord:expr),*
         $(,)?
     ) => {
-        $crate::PolygonTZM::new(
+        $crate::Polygon::new(
             $crate::line_string![$($coord,)*],
             vec![],
         )
@@ -311,7 +310,7 @@ macro_rules! polygon {
 mod test {
     #[test]
     fn test_point() {
-        let p = point!(x: 1.2, y: 3.4);
+        let p = point! { x: 1.2, y: 3.4 };
         assert_eq!(p.x(), 1.2);
         assert_eq!(p.y(), 3.4);
 

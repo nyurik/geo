@@ -4,28 +4,27 @@
 // prevent duplication. These functions are _not_ meant for public consumption.
 
 use crate::{
-    CoordFloat, CoordNum, CoordTZM, Coordinate, Line, LineM, LineString, LineStringTZM, LineTZM,
-    Measure, Point, RectTZM, ZCoord,
+    CoordFloat, CoordNum, Coordinate, Line, LineString, Measure, NoValue, Point, Rect, ZCoord,
 };
 
 pub fn line_string_bounding_rect<T: CoordNum, Z: ZCoord, M: Measure>(
-    line_string: &LineStringTZM<T, Z, M>,
-) -> Option<RectTZM<T, Z, M>> {
+    line_string: &LineString<T, Z, M>,
+) -> Option<Rect<T, Z, M>> {
     get_bounding_rect(line_string.coords().cloned())
 }
 
 pub fn line_bounding_rect<T: CoordNum, Z: ZCoord, M: Measure>(
-    line: LineTZM<T, Z, M>,
-) -> RectTZM<T, Z, M> {
-    RectTZM::new(line.start, line.end)
+    line: Line<T, Z, M>,
+) -> Rect<T, Z, M> {
+    Rect::new(line.start, line.end)
 }
 
-pub fn get_bounding_rect<I, T, Z, M>(collection: I) -> Option<RectTZM<T, Z, M>>
+pub fn get_bounding_rect<I, T, Z, M>(collection: I) -> Option<Rect<T, Z, M>>
 where
     T: CoordNum,
     Z: ZCoord,
     M: Measure,
-    I: IntoIterator<Item = CoordTZM<T, Z, M>>,
+    I: IntoIterator<Item = Coordinate<T, Z, M>>,
 {
     let mut iter = collection.into_iter();
     if let Some(pnt) = iter.next() {
@@ -40,7 +39,7 @@ where
             mrange = get_min_max(pnt.m, mrange.0, mrange.1);
         }
 
-        return Some(RectTZM::new(
+        return Some(Rect::new(
             coord! {
                 x: xrange.0,
                 y: yrange.0,
@@ -93,7 +92,7 @@ where
     s.abs() * dx.hypot(dy)
 }
 
-pub fn line_euclidean_length<T: CoordFloat, M: Measure>(line: LineM<T, M>) -> T {
+pub fn line_euclidean_length<T: CoordFloat, M: Measure>(line: Line<T, NoValue, M>) -> T {
     line.dx().hypot(line.dy())
 }
 

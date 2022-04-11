@@ -50,7 +50,7 @@
 //! [rstar]: https://github.com/Stoeoef/rstar
 //! [Serde]: https://serde.rs/
 extern crate num_traits;
-use num_traits::{Float, Num, NumCast, NumOps, Zero};
+use num_traits::{Float, Num, NumCast, NumOps, One, Zero};
 use std::fmt::Debug;
 
 #[cfg(feature = "serde")]
@@ -76,60 +76,71 @@ impl<T: Num + Copy + NumCast + PartialOrd + Debug> CoordNum for T {}
 pub trait CoordFloat: CoordNum + Float {}
 impl<T: CoordNum + Float> CoordFloat for T {}
 
-pub trait ZCoord: NumOps + Zero + Copy + PartialEq + PartialOrd + Debug {}
-impl<Z: NumOps + Zero + Copy + PartialEq + PartialOrd + Debug> ZCoord for Z {}
+/// The type of the optional z value of a point/coordinate.
+///
+/// Floats (`f32` and `f64`) and Integers (`u8`, `i32` etc.) implement this.
+/// Also, an empty [`NoValue`] generic type can be used instead of the real value,
+/// allowing * types to avoid having Z value if it is not needed.
+///
+/// Unlike [CoordNum], this trait does not require [NumCast] and [Num] traits.
+pub trait ZCoord: NumOps + One + Zero + Copy + PartialEq + PartialOrd + Debug {}
+impl<Z: NumOps + One + Zero + Copy + PartialEq + PartialOrd + Debug> ZCoord for Z {}
 
-pub trait Measure: NumOps + Zero + Copy + PartialEq + PartialOrd + Debug {}
-impl<M: NumOps + Zero + Copy + PartialEq + PartialOrd + Debug> Measure for M {}
+/// The type of the optional measurement (m) value of a point/coordinate.
+///
+/// Floats (`f32` and `f64`) and Integers (`u8`, `i32` etc.) implement this.
+/// Also, an empty [`NoValue`] generic type can be used instead of the real value,
+/// allowing * types to avoid having M value if it is not needed.
+///
+/// Unlike [CoordNum], this trait does not require [NumCast] and [Num] traits.
+pub trait Measure: NumOps + One + Zero + Copy + PartialEq + PartialOrd + Debug {}
+impl<M: NumOps + One + Zero + Copy + PartialEq + PartialOrd + Debug> Measure for M {}
 
 mod novalue;
 pub use crate::novalue::NoValue;
 
 mod coordinate;
-pub use crate::coordinate::{Coord, CoordM, CoordTZM, CoordZ, CoordZM, Coordinate};
+pub use crate::coordinate::{Coordinate, CoordinateM, CoordinateZ, CoordinateZM};
 
 mod point;
-pub use crate::point::{Point, PointM, PointTZM, PointZ, PointZM};
+pub use crate::point::{Point, PointM, PointZ, PointZM};
 
 mod multi_point;
-pub use crate::multi_point::{MultiPoint, MultiPointM, MultiPointTZM, MultiPointZ, MultiPointZM};
+pub use crate::multi_point::{MultiPoint, MultiPointM, MultiPointZ, MultiPointZM};
 
 mod line;
-pub use crate::line::{Line, LineM, LineTZM, LineZ, LineZM};
+pub use crate::line::{Line, LineM, LineZ, LineZM};
 
 mod line_string;
 pub use crate::line_string::{
-    LineString, LineStringM, LineStringTZM, LineStringZ, LineStringZM, PointsIter, PointsIterM,
-    PointsIterTZM, PointsIterZ, PointsIterZM,
+    LineString, LineStringM, LineStringZ, LineStringZM, PointsIter, PointsIterM, PointsIterZ,
+    PointsIterZM,
 };
 
 mod multi_line_string;
 pub use crate::multi_line_string::{
-    MultiLineString, MultiLineStringM, MultiLineStringTZM, MultiLineStringZ, MultiLineStringZM,
+    MultiLineString, MultiLineStringM, MultiLineStringZ, MultiLineStringZM,
 };
 
 mod polygon;
-pub use crate::polygon::{Polygon, PolygonM, PolygonTZM, PolygonZ, PolygonZM};
+pub use crate::polygon::{Polygon, PolygonM, PolygonZ, PolygonZM};
 
 mod multi_polygon;
-pub use crate::multi_polygon::{
-    MultiPolygon, MultiPolygonM, MultiPolygonTZM, MultiPolygonZ, MultiPolygonZM,
-};
+pub use crate::multi_polygon::{MultiPolygon, MultiPolygonM, MultiPolygonZ, MultiPolygonZM};
 
 mod geometry;
-pub use crate::geometry::{Geometry, GeometryM, GeometryTZM, GeometryZ, GeometryZM};
+pub use crate::geometry::{Geometry, GeometryM, GeometryZ, GeometryZM};
 
 mod geometry_collection;
 pub use crate::geometry_collection::{
-    GeometryCollection, GeometryCollectionM, GeometryCollectionTZM, GeometryCollectionZ,
-    GeometryCollectionZM,
+    GeometryCollection, GeometryCollectionM, GeometryCollectionZ, GeometryCollectionZM,
 };
 
 mod triangle;
-pub use crate::triangle::{Triangle, TriangleM, TriangleTZM, TriangleZ, TriangleZM};
+pub use crate::triangle::{Triangle, TriangleM, TriangleZ, TriangleZM};
 
 mod rect;
-pub use crate::rect::{Rect, RectM, RectTZM, RectZ, RectZM};
+pub use crate::rect::{Rect, RectM, RectZ, RectZM};
 
 mod error;
 pub use error::Error;
@@ -158,7 +169,7 @@ mod tests {
 
         let p = Point::from(c);
 
-        let PointTZM(c2) = p;
+        let Point(c2) = p;
         assert_eq!(c, c2);
         assert_relative_eq!(c.x, c2.x);
         assert_relative_eq!(c.y, c2.y);

@@ -1,7 +1,9 @@
-use crate::{CoordNum, CoordTZM, LineTZM, Measure, NoValue, PointTZM, TriangleTZM, ZCoord};
+use crate::*;
 use std::iter::FromIterator;
 use std::ops::{Index, IndexMut};
 
+/// A generic line string with 3D space + Measure value support.
+///
 /// An ordered collection of two or more [`Coordinate`]s, representing a
 /// path between locations.
 ///
@@ -126,39 +128,49 @@ use std::ops::{Index, IndexMut};
 /// let point_vec = line_string.clone().into_points();
 ///
 /// ```
-
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct LineStringTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<CoordTZM<T, Z, M>>);
+pub struct LineString<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue>(
+    pub Vec<Coordinate<T, Z, M>>,
+);
 
-pub type LineString<T> = LineStringTZM<T, NoValue, NoValue>;
-pub type LineStringM<T, M> = LineStringTZM<T, NoValue, M>;
-pub type LineStringZ<T> = LineStringTZM<T, T, NoValue>;
-pub type LineStringZM<T, M> = LineStringTZM<T, T, M>;
+/// A line string with a measurement value in 2D space.
+///
+/// See [LineString]
+pub type LineStringM<T> = LineString<T, NoValue, T>;
+
+/// A line string in 3D space.
+///
+/// See [LineString]
+pub type LineStringZ<T> = LineString<T, T, NoValue>;
+
+/// A line string with a measurement value in 3D space.
+///
+/// See [LineString]
+pub type LineStringZM<T> = LineString<T, T, T>;
 
 /// A [`Point`] iterator returned by the `points` method
 #[derive(Debug)]
-pub struct PointsIterTZM<'a, T, Z, M>(::std::slice::Iter<'a, CoordTZM<T, Z, M>>)
+pub struct PointsIter<'a, T, Z = NoValue, M = NoValue>(::std::slice::Iter<'a, Coordinate<T, Z, M>>)
 where
     T: CoordNum + 'a,
     Z: ZCoord + 'a,
     M: Measure + 'a;
 
-pub type PointsIter<'a, T> = PointsIterTZM<'a, T, NoValue, NoValue>;
-pub type PointsIterM<'a, T, M> = PointsIterTZM<'a, T, NoValue, M>;
-pub type PointsIterZ<'a, T> = PointsIterTZM<'a, T, T, NoValue>;
-pub type PointsIterZM<'a, T, M> = PointsIterTZM<'a, T, T, M>;
+pub type PointsIterM<'a, T> = PointsIter<'a, T, NoValue, T>;
+pub type PointsIterZ<'a, T> = PointsIter<'a, T, T, NoValue>;
+pub type PointsIterZM<'a, T> = PointsIter<'a, T, T, T>;
 
-impl<'a, T, Z, M> Iterator for PointsIterTZM<'a, T, Z, M>
+impl<'a, T, Z, M> Iterator for PointsIter<'a, T, Z, M>
 where
     T: CoordNum + 'a,
     Z: ZCoord + 'a,
     M: Measure + 'a,
 {
-    type Item = PointTZM<T, Z, M>;
+    type Item = Point<T, Z, M>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.0.next().map(|c| PointTZM::from(*c))
+        self.0.next().map(|c| Point::from(*c))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -166,26 +178,26 @@ where
     }
 }
 
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> ExactSizeIterator for PointsIterTZM<'a, T, Z, M> {
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> ExactSizeIterator for PointsIter<'a, T, Z, M> {
     fn len(&self) -> usize {
         self.0.len()
     }
 }
 
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> DoubleEndedIterator for PointsIterTZM<'a, T, Z, M> {
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> DoubleEndedIterator for PointsIter<'a, T, Z, M> {
     fn next_back(&mut self) -> Option<Self::Item> {
-        self.0.next_back().map(|c| PointTZM::from(*c))
+        self.0.next_back().map(|c| Point::from(*c))
     }
 }
 
 /// A [`Coordinate`] iterator used by the `into_iter` method on a [`LineString`]
 #[derive(Debug)]
 pub struct CoordinatesIter<'a, T: CoordNum + 'a, Z: ZCoord + 'a, M: Measure + 'a>(
-    ::std::slice::Iter<'a, CoordTZM<T, Z, M>>,
+    ::std::slice::Iter<'a, Coordinate<T, Z, M>>,
 );
 
 impl<'a, T: CoordNum, Z: ZCoord, M: Measure> Iterator for CoordinatesIter<'a, T, Z, M> {
-    type Item = &'a CoordTZM<T, Z, M>;
+    type Item = &'a Coordinate<T, Z, M>;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.0.next()
@@ -208,34 +220,34 @@ impl<'a, T: CoordNum, Z: ZCoord, M: Measure> DoubleEndedIterator for Coordinates
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> LineStringTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> LineString<T, Z, M> {
     /// Instantiate Self from the raw content value
-    pub fn new(value: Vec<CoordTZM<T, Z, M>>) -> Self {
+    pub fn new(value: Vec<Coordinate<T, Z, M>>) -> Self {
         Self(value)
     }
 
     /// Return an iterator yielding the coordinates of a [`LineString`] as [`Point`]s
-    pub fn points(&self) -> PointsIterTZM<T, Z, M> {
-        PointsIterTZM(self.0.iter())
+    pub fn points(&self) -> PointsIter<T, Z, M> {
+        PointsIter(self.0.iter())
     }
 
     /// Return an iterator yielding the members of a [`LineString`] as [`Coordinate`]s
-    pub fn coords(&self) -> impl Iterator<Item = &CoordTZM<T, Z, M>> {
+    pub fn coords(&self) -> impl Iterator<Item = &Coordinate<T, Z, M>> {
         self.0.iter()
     }
 
     /// Return an iterator yielding the coordinates of a [`LineString`] as mutable [`Coordinate`]s
-    pub fn coords_mut(&mut self) -> impl Iterator<Item = &mut CoordTZM<T, Z, M>> {
+    pub fn coords_mut(&mut self) -> impl Iterator<Item = &mut Coordinate<T, Z, M>> {
         self.0.iter_mut()
     }
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Point`]s
-    pub fn into_points(self) -> Vec<PointTZM<T, Z, M>> {
-        self.0.into_iter().map(PointTZM::from).collect()
+    pub fn into_points(self) -> Vec<Point<T, Z, M>> {
+        self.0.into_iter().map(Point::from).collect()
     }
 
     /// Return the coordinates of a [`LineString`] as a [`Vec`] of [`Coordinate`]s
-    pub fn into_inner(self) -> Vec<CoordTZM<T, Z, M>> {
+    pub fn into_inner(self) -> Vec<Coordinate<T, Z, M>> {
         self.0
     }
 
@@ -267,21 +279,19 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> LineStringTZM<T, Z, M> {
     /// );
     /// assert!(lines.next().is_none());
     /// ```
-    pub fn lines(&'_ self) -> impl ExactSizeIterator + Iterator<Item = LineTZM<T, Z, M>> + '_ {
+    pub fn lines(&'_ self) -> impl ExactSizeIterator + Iterator<Item = Line<T, Z, M>> + '_ {
         self.0.windows(2).map(|w| {
             // slice::windows(N) is guaranteed to yield a slice with exactly N elements
-            unsafe { LineTZM::new(*w.get_unchecked(0), *w.get_unchecked(1)) }
+            unsafe { Line::new(*w.get_unchecked(0), *w.get_unchecked(1)) }
         })
     }
 
     /// An iterator which yields the coordinates of a [`LineString`] as [Triangle]s
-    pub fn triangles(
-        &'_ self,
-    ) -> impl ExactSizeIterator + Iterator<Item = TriangleTZM<T, Z, M>> + '_ {
+    pub fn triangles(&'_ self) -> impl ExactSizeIterator + Iterator<Item = Triangle<T, Z, M>> + '_ {
         self.0.windows(3).map(|w| {
             // slice::windows(N) is guaranteed to yield a slice with exactly N elements
             unsafe {
-                TriangleTZM::new(
+                Triangle::new(
                     *w.get_unchecked(0),
                     *w.get_unchecked(1),
                     *w.get_unchecked(2),
@@ -330,23 +340,23 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> LineStringTZM<T, Z, M> {
 }
 
 /// Turn a [`Vec`] of [`Point`]-like objects into a [`LineString`].
-impl<T: CoordNum, Z: ZCoord, M: Measure, IC: Into<CoordTZM<T, Z, M>>> From<Vec<IC>>
-    for LineStringTZM<T, Z, M>
+impl<T: CoordNum, Z: ZCoord, M: Measure, IC: Into<Coordinate<T, Z, M>>> From<Vec<IC>>
+    for LineString<T, Z, M>
 {
     fn from(v: Vec<IC>) -> Self {
         Self(v.into_iter().map(|c| c.into()).collect())
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<LineTZM<T, Z, M>> for LineStringTZM<T, Z, M> {
-    fn from(line: LineTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Line<T, Z, M>> for LineString<T, Z, M> {
+    fn from(line: Line<T, Z, M>) -> Self {
         Self(vec![line.start, line.end])
     }
 }
 
 /// Turn an iterator of [`Point`]-like objects into a [`LineString`].
-impl<T: CoordNum, Z: ZCoord, M: Measure, IC: Into<CoordTZM<T, Z, M>>> FromIterator<IC>
-    for LineStringTZM<T, Z, M>
+impl<T: CoordNum, Z: ZCoord, M: Measure, IC: Into<Coordinate<T, Z, M>>> FromIterator<IC>
+    for LineString<T, Z, M>
 {
     fn from_iter<I: IntoIterator<Item = IC>>(iter: I) -> Self {
         Self(iter.into_iter().map(|c| c.into()).collect())
@@ -354,17 +364,17 @@ impl<T: CoordNum, Z: ZCoord, M: Measure, IC: Into<CoordTZM<T, Z, M>>> FromIterat
 }
 
 /// Iterate over all the [`Coordinate`]s in this [`LineString`].
-impl<T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for LineStringTZM<T, Z, M> {
-    type Item = CoordTZM<T, Z, M>;
-    type IntoIter = ::std::vec::IntoIter<CoordTZM<T, Z, M>>;
+impl<T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for LineString<T, Z, M> {
+    type Item = Coordinate<T, Z, M>;
+    type IntoIter = ::std::vec::IntoIter<Coordinate<T, Z, M>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
 }
 
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a LineStringTZM<T, Z, M> {
-    type Item = &'a CoordTZM<T, Z, M>;
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a LineString<T, Z, M> {
+    type Item = &'a Coordinate<T, Z, M>;
     type IntoIter = CoordinatesIter<'a, T, Z, M>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -373,25 +383,25 @@ impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a LineStringTZM<
 }
 
 /// Mutably iterate over all the [`Coordinate`]s in this [`LineString`]
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a mut LineStringTZM<T, Z, M> {
-    type Item = &'a mut CoordTZM<T, Z, M>;
-    type IntoIter = ::std::slice::IterMut<'a, CoordTZM<T, Z, M>>;
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a mut LineString<T, Z, M> {
+    type Item = &'a mut Coordinate<T, Z, M>;
+    type IntoIter = ::std::slice::IterMut<'a, Coordinate<T, Z, M>>;
 
-    fn into_iter(self) -> ::std::slice::IterMut<'a, CoordTZM<T, Z, M>> {
+    fn into_iter(self) -> ::std::slice::IterMut<'a, Coordinate<T, Z, M>> {
         self.0.iter_mut()
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Index<usize> for LineStringTZM<T, Z, M> {
-    type Output = CoordTZM<T, Z, M>;
+impl<T: CoordNum, Z: ZCoord, M: Measure> Index<usize> for LineString<T, Z, M> {
+    type Output = Coordinate<T, Z, M>;
 
-    fn index(&self, index: usize) -> &CoordTZM<T, Z, M> {
+    fn index(&self, index: usize) -> &Coordinate<T, Z, M> {
         self.0.index(index)
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> IndexMut<usize> for LineStringTZM<T, Z, M> {
-    fn index_mut(&mut self, index: usize) -> &mut CoordTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> IndexMut<usize> for LineString<T, Z, M> {
+    fn index_mut(&mut self, index: usize) -> &mut Coordinate<T, Z, M> {
         self.0.index_mut(index)
     }
 }
@@ -479,7 +489,7 @@ impl<T: approx::AbsDiffEq<Epsilon = T> + CoordNum> approx::AbsDiffEq for LineStr
 #[cfg(any(feature = "rstar_0_8", feature = "rstar_0_9"))]
 macro_rules! impl_rstar_line_string {
     ($rstar:ident) => {
-        impl<T> ::$rstar::RTreeObject for LineString<T>
+        impl<T> ::$rstar::RTreeObject for crate::LineString<T>
         where
             T: ::num_traits::Float + ::$rstar::RTreeNum,
         {
@@ -501,7 +511,7 @@ macro_rules! impl_rstar_line_string {
             }
         }
 
-        impl<T> ::$rstar::PointDistance for LineString<T>
+        impl<T> ::$rstar::PointDistance for crate::LineString<T>
         where
             T: ::num_traits::Float + ::$rstar::RTreeNum,
         {

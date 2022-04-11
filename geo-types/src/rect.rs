@@ -1,9 +1,11 @@
-use crate::{coord, polygon, CoordNum, CoordTZM, Line, Measure, NoValue, Polygon, ZCoord};
+use crate::{coord, polygon, CoordNum, Coordinate, Line, Measure, NoValue, Polygon, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 use num_traits::{NumOps, One};
 
+/// A generic bounded rectangle with 3D space + Measure value support.
+///
 /// An _axis-aligned_ bounded 2D rectangle whose area is
 /// defined by minimum and maximum `Coordinate`s.
 ///
@@ -40,17 +42,27 @@ use num_traits::{NumOps, One};
 /// ```
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct RectTZM<T: CoordNum, Z: ZCoord, M: Measure> {
-    min: CoordTZM<T, Z, M>,
-    max: CoordTZM<T, Z, M>,
+pub struct Rect<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue> {
+    min: Coordinate<T, Z, M>,
+    max: Coordinate<T, Z, M>,
 }
 
-pub type Rect<T> = RectTZM<T, NoValue, NoValue>;
-pub type RectM<T, M> = RectTZM<T, NoValue, M>;
-pub type RectZ<T> = RectTZM<T, T, NoValue>;
-pub type RectZM<T, M> = RectTZM<T, T, M>;
+/// A bounded rectangle with a measurement value in 2D space.
+///
+/// See [Rect]
+pub type RectM<T> = Rect<T, NoValue, T>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> RectTZM<T, Z, M> {
+/// A bounded rectangle in 3D space.
+///
+/// See [Rect]
+pub type RectZ<T> = Rect<T, T, NoValue>;
+
+/// A bounded rectangle with a measurement value in 3D space.
+///
+/// See [Rect]
+pub type RectZM<T> = Rect<T, T, T>;
+
+impl<T: CoordNum, Z: ZCoord, M: Measure> Rect<T, Z, M> {
     /// Creates a new rectangle from two corner coordinates.
     ///
     /// # Examples
@@ -67,7 +79,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> RectTZM<T, Z, M> {
     /// ```
     pub fn new<C>(c1: C, c2: C) -> Self
     where
-        C: Into<CoordTZM<T, Z, M>>,
+        C: Into<Coordinate<T, Z, M>>,
     {
         let c1 = c1.into();
         let c2 = c2.into();
@@ -111,7 +123,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> RectTZM<T, Z, M> {
     ///
     /// assert_eq!(rect.min(), coord! { x: 5., y: 5. });
     /// ```
-    pub fn min(self) -> CoordTZM<T, Z, M> {
+    pub fn min(self) -> Coordinate<T, Z, M> {
         self.min
     }
 
@@ -120,7 +132,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> RectTZM<T, Z, M> {
     /// # Panics
     ///
     /// Panics if `min`’s x/y is greater than the maximum coordinate’s x/y.
-    pub fn set_min<C: Into<CoordTZM<T, Z, M>>>(&mut self, min: C) {
+    pub fn set_min<C: Into<Coordinate<T, Z, M>>>(&mut self, min: C) {
         self.min = min.into();
         self.assert_valid_bounds();
     }
@@ -139,7 +151,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> RectTZM<T, Z, M> {
     ///
     /// assert_eq!(rect.max(), coord! { x: 15., y: 15. });
     /// ```
-    pub fn max(self) -> CoordTZM<T, Z, M> {
+    pub fn max(self) -> Coordinate<T, Z, M> {
         self.max
     }
 
@@ -148,7 +160,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> RectTZM<T, Z, M> {
     /// # Panics
     ///
     /// Panics if `max`’s x/y is less than the minimum coordinate’s x/y.
-    pub fn set_max<C: Into<CoordTZM<T, Z, M>>>(&mut self, max: C) {
+    pub fn set_max<C: Into<Coordinate<T, Z, M>>>(&mut self, max: C) {
         self.max = max.into();
         self.assert_valid_bounds();
     }
@@ -278,7 +290,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> RectTZM<T, Z, M> {
     }
 }
 
-impl<T, Z, M> RectTZM<T, Z, M>
+impl<T, Z, M> Rect<T, Z, M>
 where
     T: CoordNum,
     Z: ZCoord + One + NumOps,
@@ -315,7 +327,7 @@ where
     /// );
     /// assert_eq!(rect.center(), coord! { x: 2., y: 3., z: 4., m: 5. });
     /// ```
-    pub fn center(self) -> CoordTZM<T, Z, M> {
+    pub fn center(self) -> Coordinate<T, Z, M> {
         let two = T::one() + T::one();
         coord! {
             x: (self.max.x + self.min.x) / two,

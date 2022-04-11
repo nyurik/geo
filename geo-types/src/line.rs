@@ -1,9 +1,10 @@
-use crate::{CoordNum, CoordTZM, Measure, NoValue, PointTZM, ZCoord};
+use crate::{CoordNum, Coordinate, Measure, NoValue, Point, ZCoord};
+#[cfg(doc)]
+use crate::{CoordinateM, CoordinateZ, CoordinateZM};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-/// A line segment made up of exactly two
-/// [`Coordinate`s](struct.Coordinate.html).
+/// A generic line segment made up of exactly two [Coordinate] values.
 ///
 /// # Semantics
 ///
@@ -11,17 +12,36 @@ use approx::{AbsDiffEq, RelativeEq};
 /// `LineString` with the two end points.
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct LineTZM<T: CoordNum, Z: ZCoord, M: Measure> {
-    pub start: CoordTZM<T, Z, M>,
-    pub end: CoordTZM<T, Z, M>,
+pub struct Line<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue> {
+    pub start: Coordinate<T, Z, M>,
+    pub end: Coordinate<T, Z, M>,
 }
 
-pub type Line<T> = LineTZM<T, NoValue, NoValue>;
-pub type LineM<T, M> = LineTZM<T, NoValue, M>;
-pub type LineZ<T> = LineTZM<T, T, NoValue>;
-pub type LineZM<T, M> = LineTZM<T, T, M>;
+/// A line segment made up of exactly two [CoordinateM] values.
+///
+/// # Semantics
+///
+/// The _interior_ and _boundary_ are defined as with a
+/// `LineString` with the two end points.
+pub type LineM<T> = Line<T, NoValue, T>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
+/// A line segment in 3D made up of exactly two [CoordinateZ] values.
+///
+/// # Semantics
+///
+/// The _interior_ and _boundary_ are defined as with a
+/// `LineString` with the two end points.
+pub type LineZ<T> = Line<T, T, NoValue>;
+
+/// A line segment in 3D made up of exactly two [CoordinateZM] values.
+///
+/// # Semantics
+///
+/// The _interior_ and _boundary_ are defined as with a
+/// `LineString` with the two end points.
+pub type LineZM<T> = Line<T, T, T>;
+
+impl<T: CoordNum, Z: ZCoord, M: Measure> Line<T, Z, M> {
     /// Creates a new line segment.
     ///
     /// # Examples
@@ -33,13 +53,13 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
     /// assert_eq!(line.start, coord! { x: 0., y: 0. });
     /// assert_eq!(line.end, coord! { x: 1., y: 2. });
     ///
-    /// let line = LineZM::new(coord! { x: 0., y: 0., z: 0., m: 1 }, coord! { x: 1., y: 2., z: 3., m: 4 });
-    /// assert_eq!(line.start, coord! { x: 0., y: 0., z: 0., m: 1 });
-    /// assert_eq!(line.end, coord! { x: 1., y: 2., z: 3., m: 4 });
+    /// let line = LineZM::new(coord! { x: 0., y: 0., z: 0., m: 1. }, coord! { x: 1., y: 2., z: 3., m: 4. });
+    /// assert_eq!(line.start, coord! { x: 0., y: 0., z: 0., m: 1. });
+    /// assert_eq!(line.end, coord! { x: 1., y: 2., z: 3., m: 4. });
     /// ```
     pub fn new<C>(start: C, end: C) -> Self
     where
-        C: Into<CoordTZM<T, Z, M>>,
+        C: Into<Coordinate<T, Z, M>>,
     {
         Self {
             start: start.into(),
@@ -48,9 +68,9 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Line<T, Z, M> {
     /// Calculate the difference in coordinates (Δx, Δy).
-    pub fn delta(&self) -> CoordTZM<T, Z, M> {
+    pub fn delta(&self) -> Coordinate<T, Z, M> {
         self.end - self.start
     }
 
@@ -113,7 +133,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
 }
 
 /// Implementations for 2D lines with optional Measure
-impl<T: CoordNum, M: Measure> LineM<T, M> {
+impl<T: CoordNum, M: Measure> Line<T, NoValue, M> {
     /// Calculate the slope (Δy/Δx).
     ///
     /// Equivalent to:
@@ -175,16 +195,16 @@ impl<T: CoordNum, M: Measure> LineM<T, M> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> LineTZM<T, Z, M> {
-    pub fn start_point(&self) -> PointTZM<T, Z, M> {
-        PointTZM::from(self.start)
+impl<T: CoordNum, Z: ZCoord, M: Measure> Line<T, Z, M> {
+    pub fn start_point(&self) -> Point<T, Z, M> {
+        Point::from(self.start)
     }
 
-    pub fn end_point(&self) -> PointTZM<T, Z, M> {
-        PointTZM::from(self.end)
+    pub fn end_point(&self) -> Point<T, Z, M> {
+        Point::from(self.end)
     }
 
-    pub fn points(&self) -> (PointTZM<T, Z, M>, PointTZM<T, Z, M>) {
+    pub fn points(&self) -> (Point<T, Z, M>, Point<T, Z, M>) {
         (self.start_point(), self.end_point())
     }
 }

@@ -1,19 +1,19 @@
 use super::Contains;
 use crate::*;
-use geo_types::{CoordTZM, Measure, PointTZM, ZCoord};
+use geo_types::{Coordinate, Measure, Point, ZCoord};
 
 // ┌────────────────────────────────┐
 // │ Implementations for Point      │
 // └────────────────────────────────┘
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<CoordTZM<T, Z, M>> for PointTZM<T, Z, M> {
-    fn contains(&self, coord: &CoordTZM<T, Z, M>) -> bool {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<Coordinate<T, Z, M>> for Point<T, Z, M> {
+    fn contains(&self, coord: &Coordinate<T, Z, M>) -> bool {
         &self.0 == coord
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<PointTZM<T, Z, M>> for PointTZM<T, Z, M> {
-    fn contains(&self, p: &PointTZM<T, Z, M>) -> bool {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Contains<Point<T, Z, M>> for Point<T, Z, M> {
+    fn contains(&self, p: &Point<T, Z, M>) -> bool {
         self.contains(&p.0)
     }
 }

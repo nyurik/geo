@@ -1,6 +1,6 @@
 use crate::{
-    CoordNum, Error, GeometryCollectionTZM, LineStringTZM, LineTZM, Measure, MultiLineStringTZM,
-    MultiPointTZM, MultiPolygonTZM, NoValue, PointTZM, PolygonTZM, RectTZM, TriangleTZM, ZCoord,
+    CoordNum, Error, GeometryCollection, Line, LineString, Measure, MultiLineString, MultiPoint,
+    MultiPolygon, NoValue, Point, Polygon, Rect, Triangle, ZCoord,
 };
 
 #[cfg(any(feature = "approx", test))]
@@ -19,95 +19,92 @@ use std::convert::TryFrom;
 /// ```
 /// use std::convert::TryFrom;
 /// use geo_types::{Point, point, Geometry, GeometryCollection};
-/// let p = point!(x: 1.0, y: 1.0);
+///
+/// let p = point!{ x: 1.0, y: 1.0 };
 /// let pe: Geometry<f64> = p.into();
 /// let pn = Point::try_from(pe).unwrap();
 /// ```
-///
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub enum GeometryTZM<T: CoordNum, Z: ZCoord, M: Measure> {
-    Point(PointTZM<T, Z, M>),
-    Line(LineTZM<T, Z, M>),
-    LineString(LineStringTZM<T, Z, M>),
-    Polygon(PolygonTZM<T, Z, M>),
-    MultiPoint(MultiPointTZM<T, Z, M>),
-    MultiLineString(MultiLineStringTZM<T, Z, M>),
-    MultiPolygon(MultiPolygonTZM<T, Z, M>),
-    GeometryCollection(GeometryCollectionTZM<T, Z, M>),
-    Rect(RectTZM<T, Z, M>),
-    Triangle(TriangleTZM<T, Z, M>),
+pub enum Geometry<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue> {
+    Point(Point<T, Z, M>),
+    Line(Line<T, Z, M>),
+    LineString(LineString<T, Z, M>),
+    Polygon(Polygon<T, Z, M>),
+    MultiPoint(MultiPoint<T, Z, M>),
+    MultiLineString(MultiLineString<T, Z, M>),
+    MultiPolygon(MultiPolygon<T, Z, M>),
+    GeometryCollection(GeometryCollection<T, Z, M>),
+    Rect(Rect<T, Z, M>),
+    Triangle(Triangle<T, Z, M>),
 }
 
-pub type Geometry<T> = GeometryTZM<T, NoValue, NoValue>;
-pub type GeometryM<T, M> = GeometryTZM<T, NoValue, M>;
-pub type GeometryZ<T> = GeometryTZM<T, T, NoValue>;
-pub type GeometryZM<T, M> = GeometryTZM<T, T, M>;
+pub type GeometryM<T> = Geometry<T, NoValue, T>;
+pub type GeometryZ<T> = Geometry<T, T, NoValue>;
+pub type GeometryZM<T> = Geometry<T, T, T>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<PointTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: PointTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Point<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: Point<T, Z, M>) -> Self {
         Self::Point(x)
     }
 }
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<LineTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: LineTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Line<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: Line<T, Z, M>) -> Self {
         Self::Line(x)
     }
 }
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<LineStringTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: LineStringTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<LineString<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: LineString<T, Z, M>) -> Self {
         Self::LineString(x)
     }
 }
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<PolygonTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: PolygonTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Polygon<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: Polygon<T, Z, M>) -> Self {
         Self::Polygon(x)
     }
 }
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiPointTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: MultiPointTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiPoint<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: MultiPoint<T, Z, M>) -> Self {
         Self::MultiPoint(x)
     }
 }
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiLineStringTZM<T, Z, M>>
-    for GeometryTZM<T, Z, M>
-{
-    fn from(x: MultiLineStringTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiLineString<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: MultiLineString<T, Z, M>) -> Self {
         Self::MultiLineString(x)
     }
 }
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiPolygonTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: MultiPolygonTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<MultiPolygon<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: MultiPolygon<T, Z, M>) -> Self {
         Self::MultiPolygon(x)
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<RectTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: RectTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Rect<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: Rect<T, Z, M>) -> Self {
         Self::Rect(x)
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<TriangleTZM<T, Z, M>> for GeometryTZM<T, Z, M> {
-    fn from(x: TriangleTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Triangle<T, Z, M>> for Geometry<T, Z, M> {
+    fn from(x: Triangle<T, Z, M>) -> Self {
         Self::Triangle(x)
     }
 }
 
 macro_rules! try_from_geometry_impl {
-    ($(($type: ident, $typeTZM: ident)),+ $(,)? ) => {
+    ($($type: ident),+ $(,)? ) => {
         $(
         /// Convert a Geometry enum into its inner type.
         ///
         /// Fails if the enum case does not match the type you are trying to convert it to.
-        impl <T: CoordNum, Z: ZCoord, M: Measure> TryFrom<GeometryTZM<T, Z, M>> for $typeTZM<T, Z, M> {
+        impl<T: CoordNum, Z: ZCoord, M: Measure> TryFrom<Geometry<T, Z, M>> for $type<T, Z, M> {
             type Error = Error;
 
-            fn try_from(geom: GeometryTZM<T, Z, M>) -> Result<Self, Self::Error> {
+            fn try_from(geom: Geometry<T, Z, M>) -> Result<Self, Self::Error> {
                 match geom {
-                    GeometryTZM::$type(g) => Ok(g),
+                    Geometry::$type(g) => Ok(g),
                     other => Err(Error::MismatchedGeometry {
-                        expected: type_name::<$typeTZM<T, Z, M>>(),
+                        expected: type_name::<$type<T, Z, M>>(),
                         found: inner_type_name(other)
                     })
                 }
@@ -119,31 +116,31 @@ macro_rules! try_from_geometry_impl {
 
 // `concat_idents` is not available, so hacking around it
 try_from_geometry_impl!(
-    (Point, PointTZM),
-    (Line, LineTZM),
-    (LineString, LineStringTZM),
-    (Polygon, PolygonTZM),
-    (MultiPoint, MultiPointTZM),
-    (MultiLineString, MultiLineStringTZM),
-    (MultiPolygon, MultiPolygonTZM),
-    (Rect, RectTZM),
-    (Triangle, TriangleTZM),
+    Point,
+    Line,
+    LineString,
+    Polygon,
+    MultiPoint,
+    MultiLineString,
+    MultiPolygon,
+    Rect,
+    Triangle,
 );
 
 fn inner_type_name<T: CoordNum, Z: ZCoord, M: Measure>(
-    geometry: GeometryTZM<T, Z, M>,
+    geometry: Geometry<T, Z, M>,
 ) -> &'static str {
     match geometry {
-        GeometryTZM::Point(_) => type_name::<PointTZM<T, Z, M>>(),
-        GeometryTZM::Line(_) => type_name::<LineTZM<T, Z, M>>(),
-        GeometryTZM::LineString(_) => type_name::<LineStringTZM<T, Z, M>>(),
-        GeometryTZM::Polygon(_) => type_name::<PolygonTZM<T, Z, M>>(),
-        GeometryTZM::MultiPoint(_) => type_name::<MultiPointTZM<T, Z, M>>(),
-        GeometryTZM::MultiLineString(_) => type_name::<MultiLineStringTZM<T, Z, M>>(),
-        GeometryTZM::MultiPolygon(_) => type_name::<MultiPolygonTZM<T, Z, M>>(),
-        GeometryTZM::GeometryCollection(_) => type_name::<GeometryCollectionTZM<T, Z, M>>(),
-        GeometryTZM::Rect(_) => type_name::<RectTZM<T, Z, M>>(),
-        GeometryTZM::Triangle(_) => type_name::<TriangleTZM<T, Z, M>>(),
+        Geometry::Point(_) => type_name::<Point<T, Z, M>>(),
+        Geometry::Line(_) => type_name::<Line<T, Z, M>>(),
+        Geometry::LineString(_) => type_name::<LineString<T, Z, M>>(),
+        Geometry::Polygon(_) => type_name::<Polygon<T, Z, M>>(),
+        Geometry::MultiPoint(_) => type_name::<MultiPoint<T, Z, M>>(),
+        Geometry::MultiLineString(_) => type_name::<MultiLineString<T, Z, M>>(),
+        Geometry::MultiPolygon(_) => type_name::<MultiPolygon<T, Z, M>>(),
+        Geometry::GeometryCollection(_) => type_name::<GeometryCollection<T, Z, M>>(),
+        Geometry::Rect(_) => type_name::<Rect<T, Z, M>>(),
+        Geometry::Triangle(_) => type_name::<Triangle<T, Z, M>>(),
     }
 }
 

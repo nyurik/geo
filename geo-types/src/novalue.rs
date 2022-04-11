@@ -4,6 +4,8 @@ use num_traits::{One, Zero};
 use std::fmt::Debug;
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
+/// An empty placeholder type that can be used instead of the real
+/// numerical value types for 3D (z) and measurement (m) values.
 #[derive(Eq, PartialEq, PartialOrd, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NoValue;

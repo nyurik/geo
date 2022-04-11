@@ -1,11 +1,11 @@
-use crate::{CoordNum, GeometryTZM, Measure, NoValue, ZCoord};
+use crate::{CoordNum, Geometry, Measure, NoValue, ZCoord};
 
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 use std::iter::FromIterator;
 use std::ops::{Index, IndexMut};
 
-/// A collection of [`Geometry`](enum.Geometry.html) types.
+/// A generic collection of [Geometry] types with 3D space and measurement value support.
 ///
 /// It can be created from a `Vec` of Geometries, or from an Iterator which yields Geometries.
 ///
@@ -23,7 +23,7 @@ use std::ops::{Index, IndexMut};
 /// ```
 /// use std::convert::TryFrom;
 /// use geo_types::{Point, point, Geometry, GeometryCollection};
-/// let p = point!(x: 1.0, y: 1.0);
+/// let p = point! { x: 1.0, y: 1.0 };
 /// let pe = Geometry::Point(p);
 /// let gc = GeometryCollection::new(vec![pe]);
 /// for geom in gc {
@@ -35,7 +35,7 @@ use std::ops::{Index, IndexMut};
 /// ```
 /// use std::convert::TryFrom;
 /// use geo_types::{Point, point, Geometry, GeometryCollection};
-/// let p = point!(x: 1.0, y: 1.0);
+/// let p = point! { x: 1.0, y: 1.0 };
 /// let pe = Geometry::Point(p);
 /// let gc = GeometryCollection::new(vec![pe]);
 /// gc.iter().for_each(|geom| println!("{:?}", geom));
@@ -46,7 +46,7 @@ use std::ops::{Index, IndexMut};
 /// ```
 /// use std::convert::TryFrom;
 /// use geo_types::{Point, point, Geometry, GeometryCollection};
-/// let p = point!(x: 1.0, y: 1.0);
+/// let p = point! { x: 1.0, y: 1.0 };
 /// let pe = Geometry::Point(p);
 /// let mut gc = GeometryCollection::new(vec![pe]);
 /// gc.iter_mut().for_each(|geom| {
@@ -63,32 +63,43 @@ use std::ops::{Index, IndexMut};
 /// ```
 /// use std::convert::TryFrom;
 /// use geo_types::{Point, point, Geometry, GeometryCollection};
-/// let p = point!(x: 1.0, y: 1.0);
+/// let p = point! { x: 1.0, y: 1.0 };
 /// let pe = Geometry::Point(p);
 /// let gc = GeometryCollection::new(vec![pe]);
 /// println!("{:?}", gc[0]);
 /// ```
-///
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct GeometryCollectionTZM<T: CoordNum, Z: ZCoord, M: Measure>(pub Vec<GeometryTZM<T, Z, M>>);
+pub struct GeometryCollection<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue>(
+    pub Vec<Geometry<T, Z, M>>,
+);
 
-pub type GeometryCollection<T> = GeometryCollectionTZM<T, NoValue, NoValue>;
-pub type GeometryCollectionM<T, M> = GeometryCollectionTZM<T, NoValue, M>;
-pub type GeometryCollectionZ<T> = GeometryCollectionTZM<T, T, NoValue>;
-pub type GeometryCollectionZM<T, M> = GeometryCollectionTZM<T, T, M>;
+/// A geometry collection in 2D space + Measure value.
+///
+/// See [GeometryCollection]
+pub type GeometryCollectionM<T> = GeometryCollection<T, NoValue, T>;
+
+/// A geometry collection in 3D space.
+///
+/// See [GeometryCollection]
+pub type GeometryCollectionZ<T> = GeometryCollection<T, T, NoValue>;
+
+/// A geometry collection in 3D space + Measure value.
+///
+/// See [GeometryCollection]
+pub type GeometryCollectionZM<T> = GeometryCollection<T, T, T>;
 
 // Implementing Default by hand because T does not have Default restriction
 // todo: consider adding Default as a CoordNum requirement
-impl<T: CoordNum, Z: ZCoord, M: Measure> Default for GeometryCollectionTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Default for GeometryCollection<T, Z, M> {
     fn default() -> Self {
         Self(Vec::new())
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> GeometryCollectionTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> GeometryCollection<T, Z, M> {
     /// Instantiate Self from the raw content value
-    pub fn new(value: Vec<GeometryTZM<T, Z, M>>) -> Self {
+    pub fn new(value: Vec<Geometry<T, Z, M>>) -> Self {
         Self(value)
     }
 
@@ -105,8 +116,8 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> GeometryCollectionTZM<T, Z, M> {
 
 /// Convert any Geometry (or anything that can be converted to a Geometry) into a
 /// GeometryCollection
-impl<T: CoordNum, Z: ZCoord, M: Measure, IG: Into<GeometryTZM<T, Z, M>>> From<IG>
-    for GeometryCollectionTZM<T, Z, M>
+impl<T: CoordNum, Z: ZCoord, M: Measure, IG: Into<Geometry<T, Z, M>>> From<IG>
+    for GeometryCollection<T, Z, M>
 {
     fn from(x: IG) -> Self {
         Self(vec![x.into()])
@@ -114,24 +125,24 @@ impl<T: CoordNum, Z: ZCoord, M: Measure, IG: Into<GeometryTZM<T, Z, M>>> From<IG
 }
 
 /// Collect Geometries (or what can be converted to a Geometry) into a GeometryCollection
-impl<T: CoordNum, Z: ZCoord, M: Measure, IG: Into<GeometryTZM<T, Z, M>>> FromIterator<IG>
-    for GeometryCollectionTZM<T, Z, M>
+impl<T: CoordNum, Z: ZCoord, M: Measure, IG: Into<Geometry<T, Z, M>>> FromIterator<IG>
+    for GeometryCollection<T, Z, M>
 {
     fn from_iter<I: IntoIterator<Item = IG>>(iter: I) -> Self {
         Self(iter.into_iter().map(|g| g.into()).collect())
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Index<usize> for GeometryCollectionTZM<T, Z, M> {
-    type Output = GeometryTZM<T, Z, M>;
+impl<T: CoordNum, Z: ZCoord, M: Measure> Index<usize> for GeometryCollection<T, Z, M> {
+    type Output = Geometry<T, Z, M>;
 
-    fn index(&self, index: usize) -> &GeometryTZM<T, Z, M> {
+    fn index(&self, index: usize) -> &Geometry<T, Z, M> {
         self.0.index(index)
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> IndexMut<usize> for GeometryCollectionTZM<T, Z, M> {
-    fn index_mut(&mut self, index: usize) -> &mut GeometryTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> IndexMut<usize> for GeometryCollection<T, Z, M> {
+    fn index_mut(&mut self, index: usize) -> &mut Geometry<T, Z, M> {
         self.0.index_mut(index)
     }
 }
@@ -139,13 +150,13 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> IndexMut<usize> for GeometryCollectionT
 // structure helper for consuming iterator
 #[derive(Debug)]
 pub struct IntoIteratorHelper<T: CoordNum, Z: ZCoord, M: Measure> {
-    iter: ::std::vec::IntoIter<GeometryTZM<T, Z, M>>,
+    iter: ::std::vec::IntoIter<Geometry<T, Z, M>>,
 }
 
 // implement the IntoIterator trait for a consuming iterator. Iteration will
 // consume the GeometryCollection
-impl<T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for GeometryCollectionTZM<T, Z, M> {
-    type Item = GeometryTZM<T, Z, M>;
+impl<T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for GeometryCollection<T, Z, M> {
+    type Item = Geometry<T, Z, M>;
     type IntoIter = IntoIteratorHelper<T, Z, M>;
 
     // note that into_iter() is consuming self
@@ -158,7 +169,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for GeometryCollectionTZM<
 
 // implement Iterator trait for the helper struct, to be used by adapters
 impl<T: CoordNum, Z: ZCoord, M: Measure> Iterator for IntoIteratorHelper<T, Z, M> {
-    type Item = GeometryTZM<T, Z, M>;
+    type Item = Geometry<T, Z, M>;
 
     // just return the reference
     fn next(&mut self) -> Option<Self::Item> {
@@ -169,13 +180,13 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> Iterator for IntoIteratorHelper<T, Z, M
 // structure helper for non-consuming iterator
 #[derive(Debug)]
 pub struct IterHelper<'a, T: CoordNum, Z: ZCoord, M: Measure> {
-    iter: ::std::slice::Iter<'a, GeometryTZM<T, Z, M>>,
+    iter: ::std::slice::Iter<'a, Geometry<T, Z, M>>,
 }
 
 // implement the IntoIterator trait for a non-consuming iterator. Iteration will
 // borrow the GeometryCollection
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a GeometryCollectionTZM<T, Z, M> {
-    type Item = &'a GeometryTZM<T, Z, M>;
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a GeometryCollection<T, Z, M> {
+    type Item = &'a Geometry<T, Z, M>;
     type IntoIter = IterHelper<'a, T, Z, M>;
 
     // note that into_iter() is consuming self
@@ -188,7 +199,7 @@ impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a GeometryCollec
 
 // implement the Iterator trait for the helper struct, to be used by adapters
 impl<'a, T: CoordNum, Z: 'a + ZCoord, M: 'a + Measure> Iterator for IterHelper<'a, T, Z, M> {
-    type Item = &'a GeometryTZM<T, Z, M>;
+    type Item = &'a Geometry<T, Z, M>;
 
     // just return the str reference
     fn next(&mut self) -> Option<Self::Item> {
@@ -199,15 +210,13 @@ impl<'a, T: CoordNum, Z: 'a + ZCoord, M: 'a + Measure> Iterator for IterHelper<'
 // structure helper for mutable non-consuming iterator
 #[derive(Debug)]
 pub struct IterMutHelper<'a, T: CoordNum, Z: ZCoord, M: Measure> {
-    iter: ::std::slice::IterMut<'a, GeometryTZM<T, Z, M>>,
+    iter: ::std::slice::IterMut<'a, Geometry<T, Z, M>>,
 }
 
 // implement the IntoIterator trait for a mutable non-consuming iterator. Iteration will
 // mutably borrow the GeometryCollection
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator
-    for &'a mut GeometryCollectionTZM<T, Z, M>
-{
-    type Item = &'a mut GeometryTZM<T, Z, M>;
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator for &'a mut GeometryCollection<T, Z, M> {
+    type Item = &'a mut Geometry<T, Z, M>;
     type IntoIter = IterMutHelper<'a, T, Z, M>;
 
     // note that into_iter() is consuming self
@@ -220,7 +229,7 @@ impl<'a, T: CoordNum, Z: ZCoord, M: Measure> IntoIterator
 
 // implement the Iterator trait for the helper struct, to be used by adapters
 impl<'a, T: CoordNum, Z: ZCoord, M: Measure> Iterator for IterMutHelper<'a, T, Z, M> {
-    type Item = &'a mut GeometryTZM<T, Z, M>;
+    type Item = &'a mut Geometry<T, Z, M>;
 
     // just return the str reference
     fn next(&mut self) -> Option<Self::Item> {
@@ -228,7 +237,7 @@ impl<'a, T: CoordNum, Z: ZCoord, M: Measure> Iterator for IterMutHelper<'a, T, Z
     }
 }
 
-impl<'a, T: CoordNum, Z: ZCoord, M: Measure> GeometryCollectionTZM<T, Z, M> {
+impl<'a, T: CoordNum, Z: ZCoord, M: Measure> GeometryCollection<T, Z, M> {
     pub fn iter(&'a self) -> IterHelper<'a, T, Z, M> {
         self.into_iter()
     }

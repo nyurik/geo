@@ -1,9 +1,8 @@
-use crate::{CoordNum, LineStringTZM, Measure, NoValue, Rect, TriangleTZM, ZCoord};
-
+use crate::{CoordNum, LineString, Measure, NoValue, Rect, Triangle, ZCoord};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq};
 
-/// A bounded two-dimensional area.
+/// A generic bounded area with 3D space + Measure value support.
 ///
 /// A `Polygon`’s outer boundary (_exterior ring_) is represented by a
 /// [`LineString`]. It may contain zero or more holes (_interior rings_), also
@@ -61,21 +60,29 @@ use approx::{AbsDiffEq, RelativeEq};
 /// If a `LineString`’s first and last `Coordinate` have different values, a
 /// new `Coordinate` will be appended to the `LineString` with a value equal to
 /// the first `Coordinate`.
-///
-/// [`LineString`]: line_string/struct.LineString.html
 #[derive(Eq, PartialEq, Clone, Debug, Hash)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct PolygonTZM<T: CoordNum, Z: ZCoord, M: Measure> {
-    exterior: LineStringTZM<T, Z, M>,
-    interiors: Vec<LineStringTZM<T, Z, M>>,
+pub struct Polygon<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue> {
+    exterior: LineString<T, Z, M>,
+    interiors: Vec<LineString<T, Z, M>>,
 }
 
-pub type Polygon<T> = PolygonTZM<T, NoValue, NoValue>;
-pub type PolygonM<T, M> = PolygonTZM<T, NoValue, M>;
-pub type PolygonZ<T> = PolygonTZM<T, T, NoValue>;
-pub type PolygonZM<T, M> = PolygonTZM<T, T, M>;
+/// A bounded area with a measurement value in 2D space.
+///
+/// See [Polygon]
+pub type PolygonM<T> = Polygon<T, NoValue, T>;
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
+/// A bounded area in 3D space.
+///
+/// See [Polygon]
+pub type PolygonZ<T> = Polygon<T, T, NoValue>;
+
+/// A bounded area with a measurement value in 3D space.
+///
+/// See [Polygon]
+pub type PolygonZM<T> = Polygon<T, T, T>;
+
+impl<T: CoordNum, Z: ZCoord, M: Measure> Polygon<T, Z, M> {
     /// Create a new `Polygon` with the provided exterior `LineString` ring and
     /// interior `LineString` rings.
     ///
@@ -126,10 +133,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     ///     &LineString::from(vec![(0., 0.), (1., 1.), (1., 0.), (0., 0.),])
     /// );
     /// ```
-    pub fn new(
-        mut exterior: LineStringTZM<T, Z, M>,
-        mut interiors: Vec<LineStringTZM<T, Z, M>>,
-    ) -> Self {
+    pub fn new(mut exterior: LineString<T, Z, M>, mut interiors: Vec<LineString<T, Z, M>>) -> Self {
         exterior.close();
         for interior in &mut interiors {
             interior.close();
@@ -176,7 +180,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     /// );
     /// ```
     #[allow(clippy::type_complexity)]
-    pub fn into_inner(self) -> (LineStringTZM<T, Z, M>, Vec<LineStringTZM<T, Z, M>>) {
+    pub fn into_inner(self) -> (LineString<T, Z, M>, Vec<LineString<T, Z, M>>) {
         (self.exterior, self.interiors)
     }
 
@@ -193,7 +197,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     ///
     /// assert_eq!(polygon.exterior(), &exterior);
     /// ```
-    pub fn exterior(&self) -> &LineStringTZM<T, Z, M> {
+    pub fn exterior(&self) -> &LineString<T, Z, M> {
         &self.exterior
     }
 
@@ -246,7 +250,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     /// [will be closed]: #linestring-closing-operation
     pub fn exterior_mut<F>(&mut self, f: F)
     where
-        F: FnOnce(&mut LineStringTZM<T, Z, M>),
+        F: FnOnce(&mut LineString<T, Z, M>),
     {
         f(&mut self.exterior);
         self.exterior.close();
@@ -273,7 +277,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     ///
     /// assert_eq!(interiors, polygon.interiors());
     /// ```
-    pub fn interiors(&self) -> &[LineStringTZM<T, Z, M>] {
+    pub fn interiors(&self) -> &[LineString<T, Z, M>] {
         &self.interiors
     }
 
@@ -348,7 +352,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     /// [will be closed]: #linestring-closing-operation
     pub fn interiors_mut<F>(&mut self, f: F)
     where
-        F: FnOnce(&mut [LineStringTZM<T, Z, M>]),
+        F: FnOnce(&mut [LineString<T, Z, M>]),
     {
         f(&mut self.interiors);
         for interior in &mut self.interiors {
@@ -386,7 +390,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> PolygonTZM<T, Z, M> {
     /// ```
     ///
     /// [will be closed]: #linestring-closing-operation
-    pub fn interiors_push(&mut self, new_interior: impl Into<LineStringTZM<T, Z, M>>) {
+    pub fn interiors_push(&mut self, new_interior: impl Into<LineString<T, Z, M>>) {
         let mut new_interior = new_interior.into();
         new_interior.close();
         self.interiors.push(new_interior);
@@ -409,8 +413,8 @@ impl<T: CoordNum> From<Rect<T>> for Polygon<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<TriangleTZM<T, Z, M>> for PolygonTZM<T, Z, M> {
-    fn from(t: TriangleTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Triangle<T, Z, M>> for Polygon<T, Z, M> {
+    fn from(t: Triangle<T, Z, M>) -> Self {
         Self::new(vec![t.0, t.1, t.2, t.0].into(), Vec::new())
     }
 }

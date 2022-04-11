@@ -1,6 +1,6 @@
 extern crate geo;
 
-use geo_types::{point, PointTZM};
+use geo_types::{point, Point};
 
 fn main() {
     let p = point! {
@@ -8,6 +8,6 @@ fn main() {
         y: 116.34,
     };
 
-    let PointTZM(coord) = p;
+    let Point(coord) = p;
     println!("Point at ({}, {})", coord.x, coord.y);
 }

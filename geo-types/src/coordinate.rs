@@ -1,13 +1,14 @@
-use crate::{coord, CoordNum, Measure, NoValue, PointTZM, ZCoord};
-use std::fmt::Debug;
-
+use crate::{coord, CoordNum, Measure, NoValue, Point, ZCoord};
 #[cfg(any(feature = "approx", test))]
 use approx::{AbsDiffEq, RelativeEq, UlpsEq};
+use num_traits::Zero;
+use std::fmt::Debug;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
-/// A lightweight struct used to store coordinates on the 2-dimensional
-/// Cartesian plane.
+/// A generic struct used to store a single coordinate with optional
+/// 3D (Z) and measurement support.
 ///
-/// Unlike `Point` (which in the future may contain additional information such
+/// Unlike [Point] (which in the future may contain additional information such
 /// as an envelope, a precision model, and spatial reference system
 /// information), a `Coordinate` only contains ordinate values and accessor
 /// methods.
@@ -26,24 +27,36 @@ use approx::{AbsDiffEq, RelativeEq, UlpsEq};
 /// [vector space]: //en.wikipedia.org/wiki/Vector_space
 #[derive(Eq, PartialEq, Clone, Copy, Debug, Hash, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct CoordTZM<T: CoordNum, Z: ZCoord, M: Measure> {
+pub struct Coordinate<T: CoordNum, Z: ZCoord = NoValue, M: Measure = NoValue> {
     pub x: T,
     pub y: T,
     pub z: Z,
     pub m: M,
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> CoordTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Coordinate<T, Z, M> {
     pub fn new(x: T, y: T, z: Z, m: M) -> Self {
         Self { x, y, z, m }
     }
 }
 
-pub type Coordinate<T> = CoordTZM<T, NoValue, NoValue>;
-pub type Coord<T> = CoordTZM<T, NoValue, NoValue>;
-pub type CoordM<T, M> = CoordTZM<T, NoValue, M>;
-pub type CoordZ<T> = CoordTZM<T, T, NoValue>;
-pub type CoordZM<T, M> = CoordTZM<T, T, M>;
+/// A lightweight struct used to store coordinates on the 2-dimensional
+/// Cartesian plane together with a Measure value of the same type.
+///
+/// See also [Coordinate]
+pub type CoordinateM<T, M = T> = Coordinate<T, NoValue, M>;
+
+/// A lightweight struct used to store coordinates on the 3-dimensional
+/// Cartesian plane.
+///
+/// See also [Coordinate]
+pub type CoordinateZ<T> = Coordinate<T, T, NoValue>;
+
+/// A lightweight struct used to store coordinates on the 3-dimensional
+/// Cartesian plane together with a Measure value of the same type.
+///
+/// See also [Coordinate]
+pub type CoordinateZM<T, M = T> = Coordinate<T, T, M>;
 
 impl<T: CoordNum> From<(T, T)> for Coordinate<T> {
     fn from(coords: (T, T)) -> Self {
@@ -63,25 +76,25 @@ impl<T: CoordNum> From<[T; 2]> for Coordinate<T> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<PointTZM<T, Z, M>> for CoordTZM<T, Z, M> {
-    fn from(point: PointTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Point<T, Z, M>> for Coordinate<T, Z, M> {
+    fn from(point: Point<T, Z, M>) -> Self {
         point.0
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<CoordTZM<T, Z, M>> for (T, T) {
-    fn from(coord: CoordTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Coordinate<T, Z, M>> for (T, T) {
+    fn from(coord: Coordinate<T, Z, M>) -> Self {
         (coord.x, coord.y)
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> From<CoordTZM<T, Z, M>> for [T; 2] {
-    fn from(coord: CoordTZM<T, Z, M>) -> Self {
+impl<T: CoordNum, Z: ZCoord, M: Measure> From<Coordinate<T, Z, M>> for [T; 2] {
+    fn from(coord: Coordinate<T, Z, M>) -> Self {
         [coord.x, coord.y]
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> CoordTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Coordinate<T, Z, M> {
     /// Returns a tuple that contains the x/horizontal & y/vertical component of the coordinate.
     ///
     /// # Examples
@@ -103,8 +116,6 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> CoordTZM<T, Z, M> {
     }
 }
 
-use std::ops::{Add, Div, Mul, Neg, Sub};
-
 /// Negate a coordinate.
 ///
 /// # Examples
@@ -118,7 +129,7 @@ use std::ops::{Add, Div, Mul, Neg, Sub};
 /// assert_eq!(q.x, -p.x);
 /// assert_eq!(q.y, -p.y);
 /// ```
-impl<T, Z, M> Neg for CoordTZM<T, Z, M>
+impl<T, Z, M> Neg for Coordinate<T, Z, M>
 where
     T: CoordNum + Neg<Output = T>,
     Z: ZCoord + Neg<Output = Z>,
@@ -150,7 +161,7 @@ where
 /// assert_eq!(sum.x, 2.75);
 /// assert_eq!(sum.y, 5.0);
 /// ```
-impl<T: CoordNum, Z: ZCoord, M: Measure> Add for CoordTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Add for Coordinate<T, Z, M> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self {
@@ -177,7 +188,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> Add for CoordTZM<T, Z, M> {
 /// assert_eq!(diff.x, 0.25);
 /// assert_eq!(diff.y, 0.);
 /// ```
-impl<T: CoordNum, Z: ZCoord, M: Measure> Sub for CoordTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Sub for Coordinate<T, Z, M> {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self {
@@ -203,7 +214,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> Sub for CoordTZM<T, Z, M> {
 /// assert_eq!(q.x, 5.0);
 /// assert_eq!(q.y, 10.0);
 /// ```
-impl<T, Z, M> Mul<T> for CoordTZM<T, Z, M>
+impl<T, Z, M> Mul<T> for Coordinate<T, Z, M>
 where
     T: CoordNum,
     Z: ZCoord + Mul<T, Output = Z>,
@@ -234,7 +245,7 @@ where
 /// assert_eq!(q.x, 1.25);
 /// assert_eq!(q.y, 2.5);
 /// ```
-impl<T, Z, M> Div<T> for CoordTZM<T, Z, M>
+impl<T, Z, M> Div<T> for Coordinate<T, Z, M>
 where
     T: CoordNum,
     Z: ZCoord + Div<T, Output = Z>,
@@ -252,7 +263,6 @@ where
     }
 }
 
-use num_traits::Zero;
 /// Create a coordinate at the origin.
 ///
 /// # Examples
@@ -266,7 +276,7 @@ use num_traits::Zero;
 /// assert_eq!(p.x, 0.);
 /// assert_eq!(p.y, 0.);
 /// ```
-impl<T: CoordNum, Z: ZCoord, M: Measure> CoordTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Coordinate<T, Z, M> {
     pub fn zero() -> Self {
         coord! {
             x: T::zero(),
@@ -277,7 +287,7 @@ impl<T: CoordNum, Z: ZCoord, M: Measure> CoordTZM<T, Z, M> {
     }
 }
 
-impl<T: CoordNum, Z: ZCoord, M: Measure> Zero for CoordTZM<T, Z, M> {
+impl<T: CoordNum, Z: ZCoord, M: Measure> Zero for Coordinate<T, Z, M> {
     fn zero() -> Self {
         Self::zero()
     }
